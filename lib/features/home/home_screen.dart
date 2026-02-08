@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:point_hue/features/camera/camera_controller.dart';
 import 'package:point_hue/features/camera/camera_view.dart';
@@ -65,6 +66,7 @@ class HomeScreen extends ConsumerWidget {
             child: ColorInfoCard(
               colorModel: colorModel,
               onLock: () {
+                HapticFeedback.mediumImpact();
                 ref.read(colorDetectorProvider.notifier).toggleLock();
                 if (!colorModel.isLocked) {
                   historyNotifier.addRecord(colorModel);

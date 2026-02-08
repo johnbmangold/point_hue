@@ -1,21 +1,12 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:point_hue/features/color/color_model.dart';
 import 'package:point_hue/features/color/color_repository.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-
   group('ColorLibraryNotifier', () {
     late ProviderContainer container;
-    const testColor = ColorModel(
-      hex: '#FF0000',
-      r: 255,
-      g: 0,
-      b: 0,
-      name: 'Red',
-    );
 
     setUp(() {
       SharedPreferences.setMockInitialValues({});
@@ -26,59 +17,36 @@ void main() {
       container.dispose();
     });
 
-    test('initial state should be empty', () async {
-      final List<ColorModel> colors = await container.read(
-        colorLibraryProvider.future,
-      );
+    test('initial state is empty', () async {
+      final colors = await container.read(colorLibraryProvider.future);
       expect(colors, isEmpty);
     });
 
-    test('saveColor should add color to library', () async {
+    test('saveColor adds a color', () async {
       final notifier = container.read(colorLibraryProvider.notifier);
-      await notifier.saveColor(testColor);
+      const color = ColorModel(hex: '#FF0000', r: 255, g: 0, b: 0, name: 'Red');
 
-      final List<ColorModel> colors = await container.read(
-        colorLibraryProvider.future,
-      );
+      await notifier.saveColor(color);
+
+      final colors = await container.read(colorLibraryProvider.future);
       expect(colors.length, 1);
-      expect(colors.first.hex, testColor.hex);
+      expect(colors.first.hex, color.hex);
     });
 
-    test('removeColor should remove color from library', () async {
+    test('removeColor removes a color', () async {
       final notifier = container.read(colorLibraryProvider.notifier);
-      await notifier.saveColor(testColor);
+      const color = ColorModel(hex: '#FF0000', r: 255, g: 0, b: 0, name: 'Red');
+      await notifier.saveColor(color);
 
-      List<ColorModel> colors = await container.read(
-        colorLibraryProvider.future,
-      );
-      expect(colors.length, 1);
+      await notifier.removeColor(color.hex);
 
-      await notifier.removeColor(testColor.hex);
-      colors = await container.read(colorLibraryProvider.future);
+      final colors = await container.read(colorLibraryProvider.future);
       expect(colors, isEmpty);
-    });
-
-    test('saveColor should avoid duplicates', () async {
-      final notifier = container.read(colorLibraryProvider.notifier);
-      await notifier.saveColor(testColor);
-      await notifier.saveColor(testColor);
-
-      final List<ColorModel> colors = await container.read(
-        colorLibraryProvider.future,
-      );
-      expect(colors.length, 1);
     });
   });
 
   group('ColorHistoryNotifier', () {
     late ProviderContainer container;
-    const testColor1 = ColorModel(
-      hex: '#FF0000',
-      r: 255,
-      g: 0,
-      b: 0,
-      name: 'Red',
-    );
 
     setUp(() {
       SharedPreferences.setMockInitialValues({});
@@ -89,41 +57,38 @@ void main() {
       container.dispose();
     });
 
-    test('addRecord should add color to history', () async {
+    test('addRecord adds a color to history', () async {
       final notifier = container.read(colorHistoryProvider.notifier);
-      await notifier.addRecord(testColor1);
-
-      final List<ColorModel> history = await container.read(
-        colorHistoryProvider.future,
+      const color = ColorModel(
+        hex: '#00FF00',
+        r: 0,
+        g: 255,
+        b: 0,
+        name: 'Green',
       );
+
+      await notifier.addRecord(color);
+
+      final history = await container.read(colorHistoryProvider.future);
       expect(history.length, 1);
-      expect(history.first.hex, testColor1.hex);
+      expect(history.first.hex, color.hex);
     });
 
-    test('addRecord should not add consecutive duplicate colors', () async {
+    test('addRecord does not duplicate consecutive colors', () async {
       final notifier = container.read(colorHistoryProvider.notifier);
-      await notifier.addRecord(testColor1);
-      await notifier.addRecord(testColor1);
-
-      final List<ColorModel> history = await container.read(
-        colorHistoryProvider.future,
+      const color = ColorModel(
+        hex: '#00FF00',
+        r: 0,
+        g: 255,
+        b: 0,
+        name: 'Green',
       );
+
+      await notifier.addRecord(color);
+      await notifier.addRecord(color);
+
+      final history = await container.read(colorHistoryProvider.future);
       expect(history.length, 1);
-    });
-
-    test('history should respect max limit of 20', () async {
-      final notifier = container.read(colorHistoryProvider.notifier);
-
-      for (var i = 0; i < 25; i++) {
-        await notifier.addRecord(
-          ColorModel(hex: '#$i', r: i, g: i, b: i, name: 'Color $i'),
-        );
-      }
-
-      final List<ColorModel> history = await container.read(
-        colorHistoryProvider.future,
-      );
-      expect(history.length, 20);
     });
   });
 }

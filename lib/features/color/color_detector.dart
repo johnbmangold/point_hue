@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:camera/camera.dart';
+
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:point_hue/features/color/color_model.dart';
@@ -25,10 +26,7 @@ class ColorDetectorNotifier extends _$ColorDetectorNotifier {
 
         _processImage(image);
 
-        // Throttle to avoid overwhelming the UI
-        Future.delayed(const Duration(milliseconds: 100), () {
-          _isProcessing = false;
-        });
+        _isProcessing = false;
       });
     } catch (e) {
       debugPrint('Error starting image stream: $e');
@@ -41,13 +39,9 @@ class ColorDetectorNotifier extends _$ColorDetectorNotifier {
   }
 
   void _processImage(CameraImage image) {
-    if (state.isLocked) {
-      // debugPrint('Skipping image processing: locked');
-      return;
-    }
+    if (state.isLocked) return;
 
     try {
-      // We only need the center pixel.
       final int width = image.width;
       final int height = image.height;
       final int centerX = width ~/ 2;
@@ -61,12 +55,6 @@ class ColorDetectorNotifier extends _$ColorDetectorNotifier {
         final int y = image.planes[0].bytes[yIndex];
 
         // U/V Plane
-        // U/V planes are subsampled (2x2)
-        // For NV21 (Android default usually), U and V are interleaved.
-        // For I420, they are separate planes.
-        // CameraX/Camera2 API typically produces YUV_420_888 which can be either.
-        // Flutter's CameraImage abstracts this but we need to be careful with pixelStride.
-
         final int uvRow = centerY ~/ 2;
         final int uvCol = centerX ~/ 2;
 
@@ -93,16 +81,20 @@ class ColorDetectorNotifier extends _$ColorDetectorNotifier {
         b = image.planes[0].bytes[index];
         g = image.planes[0].bytes[index + 1];
         r = image.planes[0].bytes[index + 2];
-        // a = image.planes[0].bytes[index + 3];
       } else {
-        debugPrint('Unsupported image format: ${image.format.group}');
+        // debugPrint('Unsupported image format: ${image.format.group}');
         return;
       }
 
       final color = Color.fromARGB(255, r, g, b);
+      // Efficiently update state
       final hex =
           '#${color.toARGB32().toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
-      final name = ColorNames.getName(color); // Ensure this is efficient
+
+      // Optimization: Only update name if color changes significantly or throttled?
+      // For now, update everything but maybe debounced?
+      // The user wants instantaneous.
+      final name = ColorNames.getName(color);
 
       state = state.copyWith(hex: hex, r: r, g: g, b: b, name: name);
     } catch (e) {
