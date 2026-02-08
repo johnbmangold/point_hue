@@ -13,6 +13,10 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorModel = ref.watch(colorDetectorProvider);
+    // Keep providers alive
+    ref.watch(colorLibraryProvider);
+    ref.watch(colorHistoryProvider);
+
     final cameraNotifier = ref.read(cameraProvider.notifier);
     final libraryNotifier = ref.read(colorLibraryProvider.notifier);
     final historyNotifier = ref.read(colorHistoryProvider.notifier);
