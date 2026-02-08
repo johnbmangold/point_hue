@@ -22,9 +22,11 @@ class _CameraViewState extends ConsumerState<CameraView> {
 
   void _startDetection() {
     final cameraState = ref.read(cameraProvider);
-    cameraState.whenData((controller) {
-      if (controller != null) {
-        ref.read(colorDetectorProvider.notifier).startDetection(controller);
+    cameraState.whenData((state) {
+      if (state != null) {
+        ref
+            .read(colorDetectorProvider.notifier)
+            .startDetection(state.controller);
       }
     });
   }
@@ -34,14 +36,14 @@ class _CameraViewState extends ConsumerState<CameraView> {
     final cameraState = ref.watch(cameraProvider);
 
     return cameraState.when(
-      data: (controller) {
-        if (controller == null) {
+      data: (state) {
+        if (state == null) {
           return const Center(child: Text('No camera available'));
         }
         return Stack(
           fit: StackFit.expand,
           children: [
-            CameraPreview(controller),
+            CameraPreview(state.controller),
             const ReticleOverlay(),
             const Positioned(top: 80, right: 20, child: ZoomPreview()),
           ],
