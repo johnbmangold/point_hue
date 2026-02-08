@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:point_hue/core/router.dart';
+import 'package:point_hue/core/theme.dart';
 
 void main() {
-  runApp(const MainApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const ProviderScope(child: PointHueApp()));
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class PointHueApp extends StatelessWidget {
+  const PointHueApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
+    return MaterialApp.router(
+      title: 'PointHue',
+      theme: PointHueTheme.light,
+      darkTheme: PointHueTheme.dark,
+      themeMode: ThemeMode.system,
+      routerConfig: goRouter,
+      debugShowCheckedModeBanner: false,
     );
   }
 }
