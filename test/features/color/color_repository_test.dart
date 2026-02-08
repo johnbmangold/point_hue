@@ -79,13 +79,6 @@ void main() {
       b: 0,
       name: 'Red',
     );
-    const testColor2 = ColorModel(
-      hex: '#00FF00',
-      r: 0,
-      g: 255,
-      b: 0,
-      name: 'Green',
-    );
 
     setUp(() {
       SharedPreferences.setMockInitialValues({});
