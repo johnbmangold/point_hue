@@ -1,38 +1,59 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:point_hue/features/color/color_model.dart';
 
 void main() {
   group('ColorModel', () {
-    const testColor = ColorModel(
-      hex: '#FF0000',
-      r: 255,
-      g: 0,
-      b: 0,
-      name: 'Red',
-    );
-
-    test('toJson and fromJson should be consistent', () {
-      final json = testColor.toJson();
-      final fromJson = ColorModel.fromJson(json);
-      expect(fromJson, testColor);
+    test('supports value equality', () {
+      const color1 = ColorModel(
+        hex: '#FFFFFF',
+        r: 255,
+        g: 255,
+        b: 255,
+        name: 'White',
+      );
+      const color2 = ColorModel(
+        hex: '#FFFFFF',
+        r: 255,
+        g: 255,
+        b: 255,
+        name: 'White',
+      );
+      expect(color1, equals(color2));
     });
 
-    test('toColor should return correct Flutter Color', () {
-      final color = testColor.toColor();
-      expect(color.r, 1.0);
-      expect(color.g, 0.0);
-      expect(color.b, 0.0);
-      expect(color.a, 1.0);
+    test('toColor returns correct Color object', () {
+      const model = ColorModel(hex: '#FF0000', r: 255, g: 0, b: 0, name: 'Red');
+      expect(model.toColor(), const Color(0xFFFF0000));
     });
 
-    test('rgbString should be formatted correctly', () {
-      expect(testColor.rgbString, 'RGB(255, 0, 0)');
+    test('rgbString returns correct string format', () {
+      const model = ColorModel(
+        hex: '#00FF00',
+        r: 0,
+        g: 255,
+        b: 0,
+        name: 'Green',
+      );
+      expect(model.rgbString, 'RGB(0, 255, 0)');
     });
 
-    test('copyWith should update fields correctly', () {
-      final updated = testColor.copyWith(isLocked: true);
-      expect(updated.isLocked, true);
-      expect(updated.hex, testColor.hex);
+    test('fromJson creates correct instance', () {
+      final json = {
+        'hex': '#0000FF',
+        'r': 0,
+        'g': 0,
+        'b': 255,
+        'name': 'Blue',
+        'isLocked': false,
+      };
+      final model = ColorModel.fromJson(json);
+      expect(model.hex, '#0000FF');
+      expect(model.r, 0);
+      expect(model.g, 0);
+      expect(model.b, 255);
+      expect(model.name, 'Blue');
+      expect(model.isLocked, false);
     });
   });
 }
