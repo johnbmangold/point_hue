@@ -18,10 +18,15 @@ abstract class CameraState with _$CameraState {
 class CameraNotifier extends _$CameraNotifier {
   @override
   Future<CameraState?> build() async {
-    ref.onDispose(() {
-      state.asData?.value?.controller.dispose();
-    });
-    return _initialize();
+    final cameraState = await _initialize();
+
+    if (cameraState != null) {
+      ref.onDispose(() {
+        cameraState.controller.dispose();
+      });
+    }
+
+    return cameraState;
   }
 
   Future<CameraState?> _initialize() async {
