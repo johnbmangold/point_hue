@@ -1,24 +1,30 @@
-import 'dart:async';
 import 'package:camera/camera.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+part 'camera_controller.freezed.dart';
 part 'camera_controller.g.dart';
+
+@freezed
+abstract class CameraState with _$CameraState {
+  const factory CameraState({
+    required CameraController controller,
+    @Default(false) bool isFlashOn,
+  }) = _CameraState;
+}
 
 @riverpod
 class CameraNotifier extends _$CameraNotifier {
-  CameraController? _controller;
-  bool _isFlashOn = false;
-
   @override
-  FutureOr<CameraController?> build() async {
+  Future<CameraState?> build() async {
     ref.onDispose(() {
-      _controller?.dispose();
+      state.asData?.value?.controller.dispose();
     });
     return _initialize();
   }
 
-  Future<CameraController?> _initialize() async {
+  Future<CameraState?> _initialize() async {
     final status = await Permission.camera.request();
     if (!status.isGranted) return null;
 
@@ -26,35 +32,35 @@ class CameraNotifier extends _$CameraNotifier {
       final cameras = await availableCameras();
       if (cameras.isEmpty) return null;
 
-      _controller = CameraController(
+      final controller = CameraController(
         cameras.first,
         ResolutionPreset.medium,
         enableAudio: false,
         imageFormatGroup: ImageFormatGroup.yuv420,
       );
 
-      await _controller!.initialize();
-      return _controller;
+      await controller.initialize();
+      return CameraState(controller: controller);
     } catch (e) {
       return null;
     }
   }
 
   Future<void> toggleFlash() async {
-    if (_controller == null || !_controller!.value.isInitialized) return;
+    final currentState = state.value;
+    if (currentState == null || !currentState.controller.value.isInitialized) {
+      return;
+    }
+
+    final newFlashMode = !currentState.isFlashOn;
 
     try {
-      _isFlashOn = !_isFlashOn;
-      await _controller!.setFlashMode(
-        _isFlashOn ? FlashMode.torch : FlashMode.off,
+      await currentState.controller.setFlashMode(
+        newFlashMode ? FlashMode.torch : FlashMode.off,
       );
-      // We don't need to rebuild everything for flash, but could notify if needed.
+      state = AsyncData(currentState.copyWith(isFlashOn: newFlashMode));
     } catch (e) {
-      _isFlashOn = !_isFlashOn; // revert state on failure
+      // Ignore error
     }
   }
-
-  bool get isFlashOn => _isFlashOn;
-
-  CameraController? get controller => _controller;
 }

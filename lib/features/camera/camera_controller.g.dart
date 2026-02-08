@@ -13,7 +13,7 @@ part of 'camera_controller.dart';
 final cameraProvider = CameraNotifierProvider._();
 
 final class CameraNotifierProvider
-    extends $AsyncNotifierProvider<CameraNotifier, CameraController?> {
+    extends $AsyncNotifierProvider<CameraNotifier, CameraState?> {
   CameraNotifierProvider._()
     : super(
         from: null,
@@ -33,20 +33,19 @@ final class CameraNotifierProvider
   CameraNotifier create() => CameraNotifier();
 }
 
-String _$cameraNotifierHash() => r'5ee5c48db2f1b1d0a21b58e10aad96b422c53a35';
+String _$cameraNotifierHash() => r'4168a1ca9cf8b225536004fe87f5e50b74d1e057';
 
-abstract class _$CameraNotifier extends $AsyncNotifier<CameraController?> {
-  FutureOr<CameraController?> build();
+abstract class _$CameraNotifier extends $AsyncNotifier<CameraState?> {
+  FutureOr<CameraState?> build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref =
-        this.ref as $Ref<AsyncValue<CameraController?>, CameraController?>;
+    final ref = this.ref as $Ref<AsyncValue<CameraState?>, CameraState?>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<CameraController?>, CameraController?>,
-              AsyncValue<CameraController?>,
+              AnyNotifier<AsyncValue<CameraState?>, CameraState?>,
+              AsyncValue<CameraState?>,
               Object?,
               Object?
             >;
