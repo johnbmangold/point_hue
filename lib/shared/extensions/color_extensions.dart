@@ -98,7 +98,7 @@ class ColorNames {
   static const Map<String, Color> _namedColors = {
     'Alice Blue': Color(0xFFF0F8FF),
     'Antique White': Color(0xFFFAEBD7),
-    'Aqua': Color(0xFF00FFFF),
+
     'Aquamarine': Color(0xFF7FFFD4),
     'Azure': Color(0xFFF0FFFF),
     'Beige': Color(0xFFF5F5DC),
