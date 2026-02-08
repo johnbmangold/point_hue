@@ -13,26 +13,19 @@ class CameraView extends ConsumerStatefulWidget {
 
 class _CameraViewState extends ConsumerState<CameraView> {
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _startDetection();
-    });
-  }
-
-  void _startDetection() {
-    final cameraState = ref.read(cameraProvider);
-    cameraState.whenData((state) {
-      if (state != null) {
-        ref
-            .read(colorDetectorProvider.notifier)
-            .startDetection(state.controller);
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    ref.listen(cameraProvider, (previous, next) {
+      next.whenData((state) {
+        if (state != null &&
+            state.controller.value.isInitialized &&
+            (previous?.value?.controller != state.controller)) {
+          ref
+              .read(colorDetectorProvider.notifier)
+              .startDetection(state.controller);
+        }
+      });
+    });
+
     final cameraState = ref.watch(cameraProvider);
 
     return cameraState.when(

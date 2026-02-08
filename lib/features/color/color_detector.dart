@@ -9,91 +9,104 @@ part 'color_detector.g.dart';
 
 @riverpod
 class ColorDetectorNotifier extends _$ColorDetectorNotifier {
-  StreamSubscription? _subscription;
   bool _isProcessing = false;
 
   @override
   ColorModel build() {
-    ref.onDispose(() {
-      _subscription?.cancel();
-    });
-
     // We don't start the stream immediately, it will be started by the UI
     return const ColorModel(hex: '#000000', r: 0, g: 0, b: 0, name: 'Initial');
   }
 
-  void startStreaming(CameraController controller) {
-    if (_subscription != null) return;
+  Future<void> startDetection(CameraController controller) async {
+    try {
+      await controller.startImageStream((image) {
+        if (_isProcessing) return;
+        _isProcessing = true;
 
-    _subscription =
-        controller.startImageStream((image) {
-              if (_isProcessing) return;
-              _isProcessing = true;
+        _processImage(image);
 
-              _processImage(image);
-
-              _isProcessing = false;
-            })
-            as StreamSubscription?;
-    // Wait, startImageStream doesn't return a subscription.
-    // It's a callback-based API.
-  }
-
-  // To fix the subscription issue, I'll use a wrapper or just manage it manually
-  void startDetection(CameraController controller) {
-    controller.startImageStream((image) {
-      if (_isProcessing) return;
-      _isProcessing = true;
-
-      _processImage(image);
-
-      // Delay to throttle processing
-      Future.delayed(const Duration(milliseconds: 100), () {
-        _isProcessing = false;
+        // Throttle to avoid overwhelming the UI
+        Future.delayed(const Duration(milliseconds: 100), () {
+          _isProcessing = false;
+        });
       });
-    });
+    } catch (e) {
+      debugPrint('Error starting image stream: $e');
+    }
   }
 
   void toggleLock() {
     state = state.copyWith(isLocked: !state.isLocked);
+    debugPrint('Color lock state changed: ${state.isLocked}');
   }
 
   void _processImage(CameraImage image) {
-    if (state.isLocked) return;
+    if (state.isLocked) {
+      // debugPrint('Skipping image processing: locked');
+      return;
+    }
 
-    // Sample the center pixel
-    final int width = image.width;
-    final int height = image.height;
+    try {
+      // We only need the center pixel.
+      final int width = image.width;
+      final int height = image.height;
+      final int centerX = width ~/ 2;
+      final int centerY = height ~/ 2;
 
-    // For simplicity, we sample from the Y plane at the center
-    // In a real YUV420 image, Y is plane 0.
-    final int centerX = width ~/ 2;
-    final int centerY = height ~/ 2;
+      int r = 0, g = 0, b = 0;
 
-    final int yIndex = centerY * width + centerX;
-    final int yValue = image.planes[0].bytes[yIndex];
+      if (image.format.group == ImageFormatGroup.yuv420) {
+        // Y Plane
+        final int yIndex = centerY * image.planes[0].bytesPerRow + centerX;
+        final int y = image.planes[0].bytes[yIndex];
 
-    // This is just grayscale if we only use Y.
-    // To get RGB, we need U and V planes.
-    // Simplifying YUV to RGB for the center pixel:
-    final int uvWidth = width ~/ 2;
-    final int uvIndex = (centerY ~/ 2) * uvWidth + (centerX ~/ 2);
+        // U/V Plane
+        // U/V planes are subsampled (2x2)
+        // For NV21 (Android default usually), U and V are interleaved.
+        // For I420, they are separate planes.
+        // CameraX/Camera2 API typically produces YUV_420_888 which can be either.
+        // Flutter's CameraImage abstracts this but we need to be careful with pixelStride.
 
-    final int uValue = image.planes[1].bytes[uvIndex];
-    final int vValue = image.planes[2].bytes[uvIndex];
+        final int uvRow = centerY ~/ 2;
+        final int uvCol = centerX ~/ 2;
 
-    // Formula for YUV to RGB
-    int r = (yValue + 1.402 * (vValue - 128)).toInt().clamp(0, 255);
-    int g = (yValue - 0.344136 * (uValue - 128) - 0.714136 * (vValue - 128))
-        .toInt()
-        .clamp(0, 255);
-    int b = (yValue + 1.772 * (uValue - 128)).toInt().clamp(0, 255);
+        final int uIndex =
+            uvRow * image.planes[1].bytesPerRow +
+            (uvCol * image.planes[1].bytesPerPixel!);
+        final int vIndex =
+            uvRow * image.planes[2].bytesPerRow +
+            (uvCol * image.planes[2].bytesPerPixel!);
 
-    final color = Color.fromARGB(255, r, g, b);
-    final hex =
-        '#${color.toARGB32().toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
-    final name = ColorNames.getName(color);
+        final int u = image.planes[1].bytes[uIndex];
+        final int v = image.planes[2].bytes[vIndex];
 
-    state = state.copyWith(hex: hex, r: r, g: g, b: b, name: name);
+        // YUV to RGB conversion
+        r = (y + 1.370705 * (v - 128)).toInt().clamp(0, 255);
+        g = (y - 0.337633 * (u - 128) - 0.698001 * (v - 128)).toInt().clamp(
+          0,
+          255,
+        );
+        b = (y + 1.732446 * (u - 128)).toInt().clamp(0, 255);
+      } else if (image.format.group == ImageFormatGroup.bgra8888) {
+        // iOS typically uses BGRA8888
+        final int index = centerY * image.planes[0].bytesPerRow + (centerX * 4);
+        b = image.planes[0].bytes[index];
+        g = image.planes[0].bytes[index + 1];
+        r = image.planes[0].bytes[index + 2];
+        // a = image.planes[0].bytes[index + 3];
+      } else {
+        debugPrint('Unsupported image format: ${image.format.group}');
+        return;
+      }
+
+      final color = Color.fromARGB(255, r, g, b);
+      final hex =
+          '#${color.toARGB32().toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
+      final name = ColorNames.getName(color); // Ensure this is efficient
+
+      state = state.copyWith(hex: hex, r: r, g: g, b: b, name: name);
+    } catch (e) {
+      debugPrint('Error in _processImage: $e');
+    }
   }
 }
