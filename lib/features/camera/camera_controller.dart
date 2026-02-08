@@ -34,7 +34,7 @@ class CameraNotifier extends _$CameraNotifier {
 
       final controller = CameraController(
         cameras.first,
-        ResolutionPreset.medium,
+        ResolutionPreset.veryHigh,
         enableAudio: false,
         imageFormatGroup: ImageFormatGroup.yuv420,
       );
