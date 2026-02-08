@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:point_hue/features/camera/camera_controller.dart';
 import 'package:point_hue/features/color/color_detector.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 class CameraView extends ConsumerStatefulWidget {
   const CameraView({super.key});
@@ -12,6 +13,18 @@ class CameraView extends ConsumerStatefulWidget {
 }
 
 class _CameraViewState extends ConsumerState<CameraView> {
+  @override
+  void initState() {
+    super.initState();
+    WakelockPlus.enable();
+  }
+
+  @override
+  void dispose() {
+    WakelockPlus.disable();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.listen(cameraProvider, (previous, next) {

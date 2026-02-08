@@ -23,6 +23,7 @@ dependencies:
   share_plus: ^12.0.1
   image: ^4.7.2
   json_annotation: ^4.9.0
+  wakelock_plus: ^1.4.0
 
 dev_dependencies:
   flutter_test:
