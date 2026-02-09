@@ -19,6 +19,7 @@ class ColorDetectorNotifier extends _$ColorDetectorNotifier {
   }
 
   Future<void> startDetection(CameraController controller) async {
+    debugPrint('Attempting to start image stream...');
     try {
       await controller.startImageStream((image) {
         if (_isProcessing) return;
@@ -28,6 +29,7 @@ class ColorDetectorNotifier extends _$ColorDetectorNotifier {
 
         _isProcessing = false;
       });
+      debugPrint('Image stream started successfully');
     } catch (e) {
       debugPrint('Error starting image stream: $e');
     }
@@ -82,7 +84,7 @@ class ColorDetectorNotifier extends _$ColorDetectorNotifier {
         g = image.planes[0].bytes[index + 1];
         r = image.planes[0].bytes[index + 2];
       } else {
-        // debugPrint('Unsupported image format: ${image.format.group}');
+        debugPrint('Unsupported image format: ${image.format.group}');
         return;
       }
 

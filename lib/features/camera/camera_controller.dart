@@ -41,7 +41,6 @@ class CameraNotifier extends _$CameraNotifier {
         cameras.first,
         ResolutionPreset.veryHigh,
         enableAudio: false,
-        imageFormatGroup: ImageFormatGroup.yuv420,
       );
 
       await controller.initialize();
