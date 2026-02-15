@@ -75,7 +75,7 @@ void main() {
 
   test('CameraNotifier (Fake) initializes successfully', () async {
     // Keep provider alive
-    container.listen(cameraProvider, (_, __) {});
+    container.listen(cameraProvider, (_, _) {});
 
     // Wait for initialization
     await container.read(cameraProvider.future);
@@ -90,7 +90,7 @@ void main() {
 
   test('toggleFlash toggles the flash state in FakeCameraNotifier', () async {
     // Keep provider alive
-    container.listen(cameraProvider, (_, __) {});
+    container.listen(cameraProvider, (_, _) {});
 
     // Wait for initialization
     await container.read(cameraProvider.future);
@@ -112,7 +112,7 @@ void main() {
 
   test('switchCamera switches camera index in FakeCameraNotifier', () async {
     // Keep provider alive
-    container.listen(cameraProvider, (_, __) {});
+    container.listen(cameraProvider, (_, _) {});
 
     // Wait for initialization
     await container.read(cameraProvider.future);
