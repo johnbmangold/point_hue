@@ -28,7 +28,7 @@ dev_dependencies:
     sdk: flutter
   build_runner: ^2.11.0
   riverpod_generator: ^4.0.0+1
-  freezed: ^3.2.3
+  freezed: ^3.2.5
   go_router_builder: ^4.2.0
   json_serializable: ^6.11.2
   flutter_launcher_icons: ^0.14.4
