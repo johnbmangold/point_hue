@@ -10,6 +10,7 @@ part 'camera_controller.g.dart';
 abstract class CameraState with _$CameraState {
   const factory CameraState({
     required CameraController controller,
+    @Default(0) int currentCameraIndex,
     @Default(false) bool isFlashOn,
   }) = _CameraState;
 }
@@ -29,7 +30,7 @@ class CameraNotifier extends _$CameraNotifier {
     return cameraState;
   }
 
-  Future<CameraState?> _initialize() async {
+  Future<CameraState?> _initialize({int? index}) async {
     final status = await Permission.camera.request();
     if (!status.isGranted) return null;
 
@@ -37,17 +38,47 @@ class CameraNotifier extends _$CameraNotifier {
       final cameras = await availableCameras();
       if (cameras.isEmpty) return null;
 
+      int cameraIndex;
+      if (index != null) {
+        cameraIndex = index % cameras.length;
+      } else {
+        // Find the first back camera
+        final backCameraIndex = cameras.indexWhere(
+          (camera) => camera.lensDirection == CameraLensDirection.back,
+        );
+        cameraIndex = backCameraIndex != -1 ? backCameraIndex : 0;
+      }
+
       final controller = CameraController(
-        cameras.first,
+        cameras[cameraIndex],
         ResolutionPreset.veryHigh,
         enableAudio: false,
       );
 
       await controller.initialize();
-      return CameraState(controller: controller);
+      return CameraState(
+        controller: controller,
+        currentCameraIndex: cameraIndex,
+      );
     } catch (e) {
       return null;
     }
+  }
+
+  Future<void> switchCamera() async {
+    final currentState = state.value;
+    if (currentState == null) return;
+
+    final cameras = await availableCameras();
+    if (cameras.length < 2) return;
+
+    final nextIndex = (currentState.currentCameraIndex + 1) % cameras.length;
+
+    // Dispose old controller
+    await currentState.controller.dispose();
+
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() => _initialize(index: nextIndex));
   }
 
   Future<void> toggleFlash() async {

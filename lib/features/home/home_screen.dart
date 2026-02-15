@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:point_hue/features/camera/camera_controller.dart';
 import 'package:point_hue/features/camera/camera_view.dart';
 import 'package:point_hue/features/color/color_detector.dart';
 import 'package:point_hue/core/router.dart';
@@ -18,7 +17,6 @@ class HomeScreen extends ConsumerWidget {
     ref.watch(colorLibraryProvider);
     ref.watch(colorHistoryProvider);
 
-    final cameraNotifier = ref.read(cameraProvider.notifier);
     final libraryNotifier = ref.read(colorLibraryProvider.notifier);
     final historyNotifier = ref.read(colorHistoryProvider.notifier);
 
@@ -50,10 +48,7 @@ class HomeScreen extends ConsumerWidget {
                     color: Colors.white,
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.flash_on, color: Colors.white),
-                  onPressed: () => cameraNotifier.toggleFlash(),
-                ),
+                const SizedBox(width: 48), // Placeholder for balance
               ],
             ),
           ),

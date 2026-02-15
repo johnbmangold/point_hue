@@ -33,7 +33,7 @@ final class CameraNotifierProvider
   CameraNotifier create() => CameraNotifier();
 }
 
-String _$cameraNotifierHash() => r'695bab3ecce497f3185de9340db6fa76065fa7b8';
+String _$cameraNotifierHash() => r'723427829cd0aba423513387526e48bfb547fa65';
 
 abstract class _$CameraNotifier extends $AsyncNotifier<CameraState?> {
   FutureOr<CameraState?> build();

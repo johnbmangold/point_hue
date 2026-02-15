@@ -51,7 +51,43 @@ class _CameraViewState extends ConsumerState<CameraView> {
           children: [
             CameraPreview(state.controller),
             const ReticleOverlay(),
-            const Positioned(top: 80, right: 20, child: ZoomPreview()),
+            Positioned(
+              top: 40,
+              right: 20,
+              child: Column(
+                children: [
+                  const ZoomPreview(),
+                  const SizedBox(height: 16),
+                  FloatingActionButton(
+                    heroTag: 'flip_camera',
+                    mini: true,
+                    backgroundColor: Colors.white.withValues(alpha: 0.3),
+                    onPressed: () {
+                      ref.read(cameraProvider.notifier).switchCamera();
+                    },
+                    child: const Icon(
+                      Icons.flip_camera_ios,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  FloatingActionButton(
+                    heroTag: 'toggle_flash',
+                    mini: true,
+                    backgroundColor: state.isFlashOn
+                        ? Colors.yellow.withValues(alpha: 0.5)
+                        : Colors.white.withValues(alpha: 0.3),
+                    onPressed: () {
+                      ref.read(cameraProvider.notifier).toggleFlash();
+                    },
+                    child: Icon(
+                      state.isFlashOn ? Icons.flash_on : Icons.flash_off,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         );
       },
