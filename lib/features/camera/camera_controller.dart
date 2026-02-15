@@ -31,10 +31,10 @@ class CameraNotifier extends _$CameraNotifier {
   }
 
   Future<CameraState?> _initialize({int? index}) async {
-    final status = await Permission.camera.request();
-    if (!status.isGranted) return null;
-
     try {
+      final status = await Permission.camera.request();
+      if (!status.isGranted) return null;
+
       final cameras = await availableCameras();
       if (cameras.isEmpty) return null;
 
