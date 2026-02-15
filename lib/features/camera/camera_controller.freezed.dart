@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CameraState {
 
- CameraController get controller; bool get isFlashOn;
+ CameraController get controller; int get currentCameraIndex; bool get isFlashOn;
 /// Create a copy of CameraState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $CameraStateCopyWith<CameraState> get copyWith => _$CameraStateCopyWithImpl<Came
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CameraState&&(identical(other.controller, controller) || other.controller == controller)&&(identical(other.isFlashOn, isFlashOn) || other.isFlashOn == isFlashOn));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CameraState&&(identical(other.controller, controller) || other.controller == controller)&&(identical(other.currentCameraIndex, currentCameraIndex) || other.currentCameraIndex == currentCameraIndex)&&(identical(other.isFlashOn, isFlashOn) || other.isFlashOn == isFlashOn));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,controller,isFlashOn);
+int get hashCode => Object.hash(runtimeType,controller,currentCameraIndex,isFlashOn);
 
 @override
 String toString() {
-  return 'CameraState(controller: $controller, isFlashOn: $isFlashOn)';
+  return 'CameraState(controller: $controller, currentCameraIndex: $currentCameraIndex, isFlashOn: $isFlashOn)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $CameraStateCopyWith<$Res>  {
   factory $CameraStateCopyWith(CameraState value, $Res Function(CameraState) _then) = _$CameraStateCopyWithImpl;
 @useResult
 $Res call({
- CameraController controller, bool isFlashOn
+ CameraController controller, int currentCameraIndex, bool isFlashOn
 });
 
 
@@ -62,10 +62,11 @@ class _$CameraStateCopyWithImpl<$Res>
 
 /// Create a copy of CameraState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? controller = null,Object? isFlashOn = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? controller = null,Object? currentCameraIndex = null,Object? isFlashOn = null,}) {
   return _then(_self.copyWith(
 controller: null == controller ? _self.controller : controller // ignore: cast_nullable_to_non_nullable
-as CameraController,isFlashOn: null == isFlashOn ? _self.isFlashOn : isFlashOn // ignore: cast_nullable_to_non_nullable
+as CameraController,currentCameraIndex: null == currentCameraIndex ? _self.currentCameraIndex : currentCameraIndex // ignore: cast_nullable_to_non_nullable
+as int,isFlashOn: null == isFlashOn ? _self.isFlashOn : isFlashOn // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -151,10 +152,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( CameraController controller,  bool isFlashOn)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( CameraController controller,  int currentCameraIndex,  bool isFlashOn)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CameraState() when $default != null:
-return $default(_that.controller,_that.isFlashOn);case _:
+return $default(_that.controller,_that.currentCameraIndex,_that.isFlashOn);case _:
   return orElse();
 
 }
@@ -172,10 +173,10 @@ return $default(_that.controller,_that.isFlashOn);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( CameraController controller,  bool isFlashOn)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( CameraController controller,  int currentCameraIndex,  bool isFlashOn)  $default,) {final _that = this;
 switch (_that) {
 case _CameraState():
-return $default(_that.controller,_that.isFlashOn);case _:
+return $default(_that.controller,_that.currentCameraIndex,_that.isFlashOn);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -192,10 +193,10 @@ return $default(_that.controller,_that.isFlashOn);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( CameraController controller,  bool isFlashOn)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( CameraController controller,  int currentCameraIndex,  bool isFlashOn)?  $default,) {final _that = this;
 switch (_that) {
 case _CameraState() when $default != null:
-return $default(_that.controller,_that.isFlashOn);case _:
+return $default(_that.controller,_that.currentCameraIndex,_that.isFlashOn);case _:
   return null;
 
 }
@@ -207,10 +208,11 @@ return $default(_that.controller,_that.isFlashOn);case _:
 
 
 class _CameraState implements CameraState {
-  const _CameraState({required this.controller, this.isFlashOn = false});
+  const _CameraState({required this.controller, this.currentCameraIndex = 0, this.isFlashOn = false});
   
 
 @override final  CameraController controller;
+@override@JsonKey() final  int currentCameraIndex;
 @override@JsonKey() final  bool isFlashOn;
 
 /// Create a copy of CameraState
@@ -223,16 +225,16 @@ _$CameraStateCopyWith<_CameraState> get copyWith => __$CameraStateCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CameraState&&(identical(other.controller, controller) || other.controller == controller)&&(identical(other.isFlashOn, isFlashOn) || other.isFlashOn == isFlashOn));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CameraState&&(identical(other.controller, controller) || other.controller == controller)&&(identical(other.currentCameraIndex, currentCameraIndex) || other.currentCameraIndex == currentCameraIndex)&&(identical(other.isFlashOn, isFlashOn) || other.isFlashOn == isFlashOn));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,controller,isFlashOn);
+int get hashCode => Object.hash(runtimeType,controller,currentCameraIndex,isFlashOn);
 
 @override
 String toString() {
-  return 'CameraState(controller: $controller, isFlashOn: $isFlashOn)';
+  return 'CameraState(controller: $controller, currentCameraIndex: $currentCameraIndex, isFlashOn: $isFlashOn)';
 }
 
 
@@ -243,7 +245,7 @@ abstract mixin class _$CameraStateCopyWith<$Res> implements $CameraStateCopyWith
   factory _$CameraStateCopyWith(_CameraState value, $Res Function(_CameraState) _then) = __$CameraStateCopyWithImpl;
 @override @useResult
 $Res call({
- CameraController controller, bool isFlashOn
+ CameraController controller, int currentCameraIndex, bool isFlashOn
 });
 
 
@@ -260,10 +262,11 @@ class __$CameraStateCopyWithImpl<$Res>
 
 /// Create a copy of CameraState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? controller = null,Object? isFlashOn = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? controller = null,Object? currentCameraIndex = null,Object? isFlashOn = null,}) {
   return _then(_CameraState(
 controller: null == controller ? _self.controller : controller // ignore: cast_nullable_to_non_nullable
-as CameraController,isFlashOn: null == isFlashOn ? _self.isFlashOn : isFlashOn // ignore: cast_nullable_to_non_nullable
+as CameraController,currentCameraIndex: null == currentCameraIndex ? _self.currentCameraIndex : currentCameraIndex // ignore: cast_nullable_to_non_nullable
+as int,isFlashOn: null == isFlashOn ? _self.isFlashOn : isFlashOn // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
