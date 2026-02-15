@@ -38,5 +38,3 @@ class ColorDetailRoute extends GoRouteData with $ColorDetailRoute {
   Widget build(BuildContext context, GoRouterState state) =>
       ColorDetailScreen(hex: hex);
 }
-
-// TODO: Add History and Details routes when screens are ready
