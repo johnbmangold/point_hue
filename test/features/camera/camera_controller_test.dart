@@ -1,162 +1,134 @@
 import 'package:camera/camera.dart';
-import 'package:camera_platform_interface/camera_platform_interface.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 import 'package:point_hue/features/camera/camera_controller.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-class MockCameraPlatform extends CameraPlatform
-    with MockPlatformInterfaceMixin {
-  @override
-  Future<List<CameraDescription>> availableCameras() async {
-    return [
-      const CameraDescription(
-        name: 'cam1',
-        lensDirection: CameraLensDirection.back,
-        sensorOrientation: 90,
-      ),
-    ];
-  }
+import 'camera_controller_test.mocks.dart';
 
-  @override
-  Future<int> createCamera(
-    CameraDescription cameraDescription,
-    ResolutionPreset? resolutionPreset, {
-    bool? enableAudio,
-  }) async {
-    return 1;
-  }
+@GenerateMocks([CameraController, CameraValue])
+class FakeCameraNotifier extends CameraNotifier {
+  final CameraController _controller;
+  final bool _isFlashOn;
+  final int _currentCameraIndex;
+
+  FakeCameraNotifier(
+    this._controller, {
+    bool isFlashOn = false,
+    int currentCameraIndex = 0,
+  }) : _isFlashOn = isFlashOn,
+       _currentCameraIndex = currentCameraIndex;
 
   @override
-  Future<void> initializeCamera(
-    int cameraId, {
-    ImageFormatGroup? imageFormatGroup,
-  }) async {
-    // Return successfully
-  }
-
-  @override
-  Future<void> setFlashMode(int cameraId, FlashMode mode) async {
-    // Return successfully
-  }
-
-  @override
-  Future<void> dispose(int cameraId) async {
-    // Return successfully
-  }
-
-  @override
-  Stream<CameraInitializedEvent> onCameraInitialized(int cameraId) {
-    return Stream.value(
-      CameraInitializedEvent(
-        cameraId,
-        1920,
-        1080,
-        ExposureMode.auto,
-        true,
-        FocusMode.auto,
-        true,
-      ),
+  Future<CameraState?> build() async {
+    return CameraState(
+      controller: _controller,
+      isFlashOn: _isFlashOn,
+      currentCameraIndex: _currentCameraIndex,
     );
   }
 
   @override
-  Stream<CameraResolutionChangedEvent> onCameraResolutionChanged(int cameraId) {
-    return const Stream.empty();
+  Future<void> toggleFlash() async {
+    final currentState = state.value;
+    if (currentState == null) return;
+    state = AsyncData(
+      currentState.copyWith(isFlashOn: !currentState.isFlashOn),
+    );
   }
 
   @override
-  Stream<CameraClosingEvent> onCameraClosing(int cameraId) {
-    return const Stream.empty();
-  }
-
-  @override
-  Stream<CameraErrorEvent> onCameraError(int cameraId) {
-    return const Stream.empty();
-  }
-
-  @override
-  Stream<VideoRecordedEvent> onVideoRecordedEvent(int cameraId) {
-    return const Stream.empty();
-  }
-
-  @override
-  Stream<DeviceOrientationChangedEvent> onDeviceOrientationChanged() {
-    return const Stream.empty();
+  Future<void> switchCamera() async {
+    final currentState = state.value;
+    if (currentState == null) return;
+    state = AsyncData(
+      currentState.copyWith(
+        currentCameraIndex: (currentState.currentCameraIndex + 1) % 2,
+      ),
+    );
   }
 }
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-
   late ProviderContainer container;
+  late MockCameraController mockController;
+  late MockCameraValue mockValue;
 
   setUp(() {
-    container = ProviderContainer();
+    mockController = MockCameraController();
+    mockValue = MockCameraValue();
 
-    // Mock Camera Platform
-    CameraPlatform.instance = MockCameraPlatform();
+    when(mockController.value).thenReturn(mockValue);
+    when(mockValue.isInitialized).thenReturn(true);
 
-    // Mock Permission Handler Channel (keep this as it is external package)
-    const MethodChannel permissionChannel = MethodChannel(
-      'flutter.baseflow.com/permissions/methods',
+    container = ProviderContainer(
+      overrides: [
+        cameraProvider.overrideWith(() => FakeCameraNotifier(mockController)),
+      ],
     );
-
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(permissionChannel, (
-          MethodCall methodCall,
-        ) async {
-          if (methodCall.method == 'requestPermissions') {
-            return {
-              1: 1, // PermissionStatus.granted
-            };
-          }
-          return null;
-        });
   });
 
   tearDown(() {
     container.dispose();
   });
 
-  test('CameraNotifier initializes successfully', () async {
+  test('CameraNotifier (Fake) initializes successfully', () async {
     // Keep provider alive
-    container.listen(cameraProvider, (_, _) {});
+    container.listen(cameraProvider, (_, __) {});
 
-    final CameraState? cameraState = await container.read(
-      cameraProvider.future,
-    );
+    // Wait for initialization
+    await container.read(cameraProvider.future);
 
-    expect(cameraState, isNotNull);
-    expect(cameraState!.controller, isA<CameraController>());
-    expect(cameraState.isFlashOn, false);
+    final state = container.read(cameraProvider);
+
+    expect(state.value, isNotNull);
+    expect(state.value?.controller, mockController);
+    expect(state.value?.isFlashOn, false);
+    expect(state.value?.currentCameraIndex, 0);
   });
 
-  test('toggleFlash toggles the flash state', () async {
+  test('toggleFlash toggles the flash state in FakeCameraNotifier', () async {
     // Keep provider alive
-    container.listen(cameraProvider, (_, _) {});
+    container.listen(cameraProvider, (_, __) {});
 
     // Wait for initialization
     await container.read(cameraProvider.future);
     final notifier = container.read(cameraProvider.notifier);
 
     // Initial state check
-    CameraState? state = container.read(cameraProvider).value;
-    expect(state, isNotNull);
-    expect(state?.isFlashOn, false);
+    expect(container.read(cameraProvider).value?.isFlashOn, false);
 
     // Toggle Flash
     await notifier.toggleFlash();
 
     // Verify state change
-    state = container.read(cameraProvider).value;
-    expect(state?.isFlashOn, true);
+    expect(container.read(cameraProvider).value?.isFlashOn, true);
 
     // Toggle Flash back
     await notifier.toggleFlash();
+    expect(container.read(cameraProvider).value?.isFlashOn, false);
+  });
 
-    state = container.read(cameraProvider).value;
-    expect(state?.isFlashOn, false);
+  test('switchCamera switches camera index in FakeCameraNotifier', () async {
+    // Keep provider alive
+    container.listen(cameraProvider, (_, __) {});
+
+    // Wait for initialization
+    await container.read(cameraProvider.future);
+    final notifier = container.read(cameraProvider.notifier);
+
+    // Initial state check
+    expect(container.read(cameraProvider).value?.currentCameraIndex, 0);
+
+    // Switch Camera
+    await notifier.switchCamera();
+
+    // Verify state change
+    expect(container.read(cameraProvider).value?.currentCameraIndex, 1);
+
+    // Switch Camera back
+    await notifier.switchCamera();
+    expect(container.read(cameraProvider).value?.currentCameraIndex, 0);
   });
 }

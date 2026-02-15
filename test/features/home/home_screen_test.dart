@@ -92,7 +92,7 @@ void main() {
     // Verify key elements
     expect(find.text('PointHue'), findsOneWidget);
     expect(find.byIcon(Icons.collections_bookmark), findsOneWidget);
-    expect(find.byIcon(Icons.flash_on), findsOneWidget);
+    expect(find.byIcon(Icons.flip_camera_ios), findsOneWidget);
 
     // ColorInfoCard should appear
     expect(find.byType(ColorInfoCard), findsOneWidget);
@@ -105,7 +105,11 @@ class FakeCameraNotifier extends CameraNotifier {
 
   @override
   Future<CameraState?> build() async {
-    return CameraState(controller: _controller);
+    return CameraState(
+      controller: _controller,
+      currentCameraIndex: 0,
+      isFlashOn: false,
+    );
   }
 
   @override
