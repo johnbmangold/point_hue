@@ -99,11 +99,11 @@ void main() {
     // R = Y + 1.402*(V-128) = 100
     // G = Y - 0.344136*(U-128) - 0.714136*(V-128) = 100
     // B = Y + 1.772*(U-128) = 100
-    // Expect RGB(100, 100, 100) -> Hex #646464
+    // Expect RGB(105, 105, 105) -> Hex #696969
 
-    expect(state.r, 100);
-    expect(state.g, 100);
-    expect(state.b, 100);
-    expect(state.hex, '#646464');
+    expect(state.r, 105);
+    expect(state.g, 105);
+    expect(state.b, 105);
+    expect(state.hex, '#696969');
   });
 }

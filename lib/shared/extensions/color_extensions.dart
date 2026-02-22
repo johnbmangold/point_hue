@@ -1,28 +1,33 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 
+class NamedColor {
+  final String name;
+  final Color color;
+
+  const NamedColor(this.name, this.color);
+}
+
 class ColorNames {
-  static String getName(Color color) {
+  static NamedColor matchColor(Color color) {
     final lab = _rgbToLab(color);
 
     String closestName = 'Unknown';
+    Color closestColor = const Color(0xFF000000);
     double minDistance = double.infinity;
 
     for (var entry in _namedColors.entries) {
-      // Convert map RGB to Lab on the fly or pre-calculate?
-      // For 140 items, on-the-fly is fine, but pre-calculation key would be better if this class was instantiated.
-      // Since it's static, let's just do it on the fly for simplicity of code structure.
-      // Optimization: we could store the map as <String, LabColor> if needed.
       final entryLab = _rgbToLab(entry.value);
       final distance = _labDistance(lab, entryLab);
 
       if (distance < minDistance) {
         minDistance = distance;
         closestName = entry.key;
+        closestColor = entry.value;
       }
     }
 
-    return closestName;
+    return NamedColor(closestName, closestColor);
   }
 
   // CIELAB distance (Delta E 1976)
