@@ -1,7 +1,7 @@
 name: Deploy to Play Store
 
 permissions:
-  contents: write
+  contents: read
 
 on:
   push:
@@ -28,16 +28,9 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
         
-      - name: Bump version
-        run: |
-          perl -i -pe 's/version: (\d+\.\d+\.\d+)\+\d+/version: $1+${{ github.run_number }}/' pubspec.yaml
-          
-      - name: Commit version bump
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "chore: bump version to ${{ github.run_number }} [skip ci]"
-          file_pattern: 'pubspec.yaml'
-
+      - name: Setup Google Play CLI
+        run: gem install google-play-cli
+        
       - name: Generate code
         run: dart run build_runner build --delete-conflicting-outputs
         
@@ -46,7 +39,10 @@ jobs:
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
           
       - name: Build AAB
-        run: flutter build appbundle --release
+        run: |
+          export GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS=$(echo '${{ secrets.PLAY_STORE_CONFIG_JSON }}')
+          BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "com.shcworks.point_hue" --tracks="internal") + 1))
+          flutter build appbundle --release --build-name=1.0.$BUILD_NUMBER --build-number=$BUILD_NUMBER
         env:
           ANDROID_KEYSTORE_PATH: "upload-keystore.jks"
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
