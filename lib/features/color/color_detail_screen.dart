@@ -11,9 +11,10 @@ class ColorDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Find the color in library or history
-    final library = ref.watch(colorLibraryProvider).value ?? [];
-    final history = ref.watch(colorHistoryProvider).value ?? [];
-    final allColors = [...library, ...history];
+    final List<ColorModel> allColors = [
+      ...ref.watch(colorLibraryProvider).value ?? [],
+      ...ref.watch(colorHistoryProvider).value ?? [],
+    ];
 
     final colorModel = allColors.firstWhere(
       (c) => c.hex.replaceAll('#', '') == hex,
