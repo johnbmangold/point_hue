@@ -1,4 +1,5 @@
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -61,6 +62,7 @@ class CameraNotifier extends _$CameraNotifier {
         currentCameraIndex: cameraIndex,
       );
     } catch (e) {
+      debugPrint('Error initializing camera: $e');
       return null;
     }
   }
@@ -95,7 +97,7 @@ class CameraNotifier extends _$CameraNotifier {
       );
       state = AsyncData(currentState.copyWith(isFlashOn: newFlashMode));
     } catch (e) {
-      // Ignore error
+      debugPrint('Error toggling flash: $e');
     }
   }
 }
