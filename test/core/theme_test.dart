@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:point_hue/core/theme.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   group('PointHueTheme', () {
     test('brand colors are correctly defined', () {
       expect(PointHueTheme.darkCharcoal, const Color(0xFF121212));
@@ -19,7 +20,10 @@ void main() {
       expect(theme.colorScheme.secondary, PointHueTheme.vibrantCyan);
       expect(theme.scaffoldBackgroundColor, PointHueTheme.galleryWhite);
       expect(theme.useMaterial3, isTrue);
-      expect(theme.textTheme.bodyLarge?.fontFamily, GoogleFonts.outfit().fontFamily);
+      expect(
+        theme.textTheme.bodyLarge?.fontFamily,
+        GoogleFonts.outfit().fontFamily,
+      );
     });
 
     test('dark theme is correctly configured', () {
@@ -29,7 +33,10 @@ void main() {
       expect(theme.colorScheme.secondary, PointHueTheme.electricViolet);
       expect(theme.scaffoldBackgroundColor, PointHueTheme.darkCharcoal);
       expect(theme.useMaterial3, isTrue);
-      expect(theme.textTheme.bodyLarge?.fontFamily, GoogleFonts.outfit().fontFamily);
+      expect(
+        theme.textTheme.bodyLarge?.fontFamily,
+        GoogleFonts.outfit().fontFamily,
+      );
     });
   });
 }
