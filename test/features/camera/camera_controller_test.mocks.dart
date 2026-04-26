@@ -284,6 +284,33 @@ class MockCameraController extends _i1.Mock implements _i3.CameraController {
           as _i6.Future<void>);
 
   @override
+  _i6.Future<void> setVideoStabilizationMode(
+    _i2.VideoStabilizationMode? mode, {
+    bool? allowFallback = true,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(
+              #setVideoStabilizationMode,
+              [mode],
+              {#allowFallback: allowFallback},
+            ),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<Iterable<_i2.VideoStabilizationMode>>
+  getSupportedVideoStabilizationModes() =>
+      (super.noSuchMethod(
+            Invocation.method(#getSupportedVideoStabilizationModes, []),
+            returnValue: _i6.Future<Iterable<_i2.VideoStabilizationMode>>.value(
+              <_i2.VideoStabilizationMode>[],
+            ),
+          )
+          as _i6.Future<Iterable<_i2.VideoStabilizationMode>>);
+
+  @override
   _i6.Future<void> setFlashMode(_i2.FlashMode? mode) =>
       (super.noSuchMethod(
             Invocation.method(#setFlashMode, [mode]),
@@ -547,6 +574,14 @@ class MockCameraValue extends _i1.Mock implements _i3.CameraValue {
           as _i2.CameraDescription);
 
   @override
+  _i2.VideoStabilizationMode get videoStabilizationMode =>
+      (super.noSuchMethod(
+            Invocation.getter(#videoStabilizationMode),
+            returnValue: _i2.VideoStabilizationMode.off,
+          )
+          as _i2.VideoStabilizationMode);
+
+  @override
   _i3.CameraValue copyWith({
     bool? isInitialized,
     bool? isRecordingVideo,
@@ -566,6 +601,7 @@ class MockCameraValue extends _i1.Mock implements _i3.CameraValue {
     bool? isPreviewPaused,
     _i2.CameraDescription? description,
     _i3.Optional<_i8.DeviceOrientation>? previewPauseOrientation,
+    _i2.VideoStabilizationMode? videoStabilizationMode,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#copyWith, [], {
@@ -587,6 +623,7 @@ class MockCameraValue extends _i1.Mock implements _i3.CameraValue {
               #isPreviewPaused: isPreviewPaused,
               #description: description,
               #previewPauseOrientation: previewPauseOrientation,
+              #videoStabilizationMode: videoStabilizationMode,
             }),
             returnValue: _FakeCameraValue_2(
               this,
@@ -609,6 +646,7 @@ class MockCameraValue extends _i1.Mock implements _i3.CameraValue {
                 #isPreviewPaused: isPreviewPaused,
                 #description: description,
                 #previewPauseOrientation: previewPauseOrientation,
+                #videoStabilizationMode: videoStabilizationMode,
               }),
             ),
           )

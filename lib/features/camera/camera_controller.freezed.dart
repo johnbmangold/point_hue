@@ -12,7 +12,7 @@ part of 'camera_controller.dart';
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
-mixin _$CameraState {
+mixin _$CameraState implements DiagnosticableTreeMixin {
 
  CameraController get controller; int get currentCameraIndex; bool get isFlashOn;
 /// Create a copy of CameraState
@@ -22,6 +22,12 @@ mixin _$CameraState {
 $CameraStateCopyWith<CameraState> get copyWith => _$CameraStateCopyWithImpl<CameraState>(this as CameraState, _$identity);
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'CameraState'))
+    ..add(DiagnosticsProperty('controller', controller))..add(DiagnosticsProperty('currentCameraIndex', currentCameraIndex))..add(DiagnosticsProperty('isFlashOn', isFlashOn));
+}
 
 @override
 bool operator ==(Object other) {
@@ -33,7 +39,7 @@ bool operator ==(Object other) {
 int get hashCode => Object.hash(runtimeType,controller,currentCameraIndex,isFlashOn);
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'CameraState(controller: $controller, currentCameraIndex: $currentCameraIndex, isFlashOn: $isFlashOn)';
 }
 
@@ -207,7 +213,7 @@ return $default(_that.controller,_that.currentCameraIndex,_that.isFlashOn);case 
 /// @nodoc
 
 
-class _CameraState implements CameraState {
+class _CameraState with DiagnosticableTreeMixin implements CameraState {
   const _CameraState({required this.controller, this.currentCameraIndex = 0, this.isFlashOn = false});
   
 
@@ -222,6 +228,12 @@ class _CameraState implements CameraState {
 _$CameraStateCopyWith<_CameraState> get copyWith => __$CameraStateCopyWithImpl<_CameraState>(this, _$identity);
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'CameraState'))
+    ..add(DiagnosticsProperty('controller', controller))..add(DiagnosticsProperty('currentCameraIndex', currentCameraIndex))..add(DiagnosticsProperty('isFlashOn', isFlashOn));
+}
 
 @override
 bool operator ==(Object other) {
@@ -233,7 +245,7 @@ bool operator ==(Object other) {
 int get hashCode => Object.hash(runtimeType,controller,currentCameraIndex,isFlashOn);
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'CameraState(controller: $controller, currentCameraIndex: $currentCameraIndex, isFlashOn: $isFlashOn)';
 }
 

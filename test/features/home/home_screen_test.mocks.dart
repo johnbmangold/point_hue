@@ -284,6 +284,33 @@ class MockCameraController extends _i1.Mock implements _i3.CameraController {
           as _i6.Future<void>);
 
   @override
+  _i6.Future<void> setVideoStabilizationMode(
+    _i2.VideoStabilizationMode? mode, {
+    bool? allowFallback = true,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(
+              #setVideoStabilizationMode,
+              [mode],
+              {#allowFallback: allowFallback},
+            ),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<Iterable<_i2.VideoStabilizationMode>>
+  getSupportedVideoStabilizationModes() =>
+      (super.noSuchMethod(
+            Invocation.method(#getSupportedVideoStabilizationModes, []),
+            returnValue: _i6.Future<Iterable<_i2.VideoStabilizationMode>>.value(
+              <_i2.VideoStabilizationMode>[],
+            ),
+          )
+          as _i6.Future<Iterable<_i2.VideoStabilizationMode>>);
+
+  @override
   _i6.Future<void> setFlashMode(_i2.FlashMode? mode) =>
       (super.noSuchMethod(
             Invocation.method(#setFlashMode, [mode]),
