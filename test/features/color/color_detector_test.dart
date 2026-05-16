@@ -9,7 +9,7 @@ import 'package:point_hue/features/color/color_detector.dart';
 
 import 'color_detector_test.mocks.dart';
 
-@GenerateMocks([CameraController, CameraImage, Plane, ImageFormat])
+@GenerateMocks([CameraController])
 void main() {
   late ProviderContainer container;
   late MockCameraController mockController;
@@ -23,19 +23,15 @@ void main() {
     container.dispose();
   });
 
-  test('ColorDetectorNotifier initializes with default black color', () {
-    // Keep alive
+  test('initializes with default black color', () {
     container.listen(colorDetectorProvider, (_, _) {});
-
     final state = container.read(colorDetectorProvider);
     expect(state.hex, '#000000');
     expect(state.name, 'Initial');
   });
 
   test('startDetection starts image stream', () async {
-    // Keep alive
     container.listen(colorDetectorProvider, (_, _) {});
-
     final notifier = container.read(colorDetectorProvider.notifier);
 
     when(mockController.startImageStream(any)).thenAnswer((_) async {});
@@ -45,65 +41,139 @@ void main() {
     verify(mockController.startImageStream(any)).called(1);
   });
 
-  test('Color processing logic (YUV420)', () async {
-    // Keep alive
+  test('toggleLock toggles the locked state', () {
     container.listen(colorDetectorProvider, (_, _) {});
-
     final notifier = container.read(colorDetectorProvider.notifier);
 
-    // Mock Image Data for a simple color (e.g., Red-ish or Grey-ish)
-    // create a 2x2 image
-    final mockImage = MockCameraImage();
-    final mockPlaneY = MockPlane();
-    final mockPlaneU = MockPlane();
-    final mockPlaneV = MockPlane();
-    final mockFormat = MockImageFormat();
+    expect(container.read(colorDetectorProvider).isLocked, false);
 
-    when(mockFormat.group).thenReturn(ImageFormatGroup.yuv420);
-    when(mockImage.format).thenReturn(mockFormat);
-    when(mockImage.width).thenReturn(2);
-    when(mockImage.height).thenReturn(2);
-    when(mockImage.planes).thenReturn([mockPlaneY, mockPlaneU, mockPlaneV]);
+    notifier.toggleLock();
+    expect(container.read(colorDetectorProvider).isLocked, true);
 
-    // Y Plane (2x2)
-    // 4 bytes
-    final yBytes = Uint8List.fromList([100, 100, 100, 100]);
-    when(mockPlaneY.bytes).thenReturn(yBytes);
-    when(mockPlaneY.bytesPerRow).thenReturn(2);
+    notifier.toggleLock();
+    expect(container.read(colorDetectorProvider).isLocked, false);
+  });
 
-    // U Plane (1x1 for 2x2 image in 4:2:0 subsampling usually means quarter size, so 1x1)
-    // But Android might give different strides. Let's assume standard.
-    // 2x2 image -> 1x1 UV
-    final uvBytes = Uint8List.fromList([128]);
-    when(mockPlaneU.bytes).thenReturn(uvBytes);
-    when(mockPlaneU.bytesPerRow).thenReturn(1);
-    when(mockPlaneU.bytesPerPixel).thenReturn(1);
+  group('extractColor (static)', () {
+    test('YUV420 neutral gray', () {
+      const imageSize = 40;
 
-    final vBytes = Uint8List.fromList([128]);
-    when(mockPlaneV.bytes).thenReturn(vBytes);
-    when(mockPlaneV.bytesPerRow).thenReturn(1);
-    when(mockPlaneV.bytesPerPixel).thenReturn(1);
+      final yBytes = Uint8List(imageSize * imageSize);
+      yBytes.fillRange(0, yBytes.length, 100);
 
-    // Setup StartImageStream to capture callback and execute it
-    when(mockController.startImageStream(any)).thenAnswer((invocation) async {
-      final callback =
-          invocation.positionalArguments[0] as void Function(CameraImage);
-      callback(mockImage);
+      final uvSize = imageSize ~/ 2;
+      final uBytes = Uint8List(uvSize * uvSize);
+      uBytes.fillRange(0, uBytes.length, 128);
+
+      final vBytes = Uint8List(uvSize * uvSize);
+      vBytes.fillRange(0, vBytes.length, 128);
+
+      final params = ImageParams(
+        width: imageSize,
+        height: imageSize,
+        formatGroup: ImageFormatGroup.yuv420,
+        planes: [
+          PlaneData(bytes: yBytes, bytesPerRow: imageSize),
+          PlaneData(bytes: uBytes, bytesPerRow: uvSize, bytesPerPixel: 1),
+          PlaneData(bytes: vBytes, bytesPerRow: uvSize, bytesPerPixel: 1),
+        ],
+      );
+
+      final result = ColorDetectorNotifier.extractColor(params);
+
+      expect(result, isNotNull);
+      // Y=100, U=128, V=128 → neutral gray ≈ 100
+      expect(result!.r, inInclusiveRange(98, 102));
+      expect(result.g, inInclusiveRange(98, 102));
+      expect(result.b, inInclusiveRange(98, 102));
     });
 
-    await notifier.startDetection(mockController);
+    test('BGRA8888 solid red', () {
+      const imageSize = 40;
 
-    final state = container.read(colorDetectorProvider);
+      final bgraBytes = Uint8List(imageSize * imageSize * 4);
+      for (int i = 0; i < bgraBytes.length; i += 4) {
+        bgraBytes[i] = 0; // B
+        bgraBytes[i + 1] = 0; // G
+        bgraBytes[i + 2] = 255; // R
+        bgraBytes[i + 3] = 255; // A
+      }
 
-    // With Y=100, U=128, V=128 (neutral gray)
-    // R = Y + 1.402*(V-128) = 100
-    // G = Y - 0.344136*(U-128) - 0.714136*(V-128) = 100
-    // B = Y + 1.772*(U-128) = 100
-    // Expect RGB(105, 105, 105) -> Hex #696969
+      final params = ImageParams(
+        width: imageSize,
+        height: imageSize,
+        formatGroup: ImageFormatGroup.bgra8888,
+        planes: [PlaneData(bytes: bgraBytes, bytesPerRow: imageSize * 4)],
+      );
 
-    expect(state.r, 105);
-    expect(state.g, 105);
-    expect(state.b, 105);
-    expect(state.hex, '#696969');
+      final result = ColorDetectorNotifier.extractColor(params);
+
+      expect(result, isNotNull);
+      expect(result!.r, 255);
+      expect(result.g, 0);
+      expect(result.b, 0);
+    });
+
+    test('returns null for unsupported format', () {
+      final params = ImageParams(
+        width: 10,
+        height: 10,
+        formatGroup: ImageFormatGroup.nv21,
+        planes: [],
+      );
+
+      final result = ColorDetectorNotifier.extractColor(params);
+      expect(result, isNull);
+    });
+
+    test('handles empty planes gracefully', () {
+      final params = ImageParams(
+        width: 10,
+        height: 10,
+        formatGroup: ImageFormatGroup.yuv420,
+        planes: [],
+      );
+
+      final result = ColorDetectorNotifier.extractColor(params);
+      expect(result, isNull);
+    });
+
+    test('handles null bytesPerPixel', () {
+      const imageSize = 40;
+
+      final yBytes = Uint8List(imageSize * imageSize);
+      yBytes.fillRange(0, yBytes.length, 200);
+
+      final uvSize = imageSize ~/ 2;
+      final uBytes = Uint8List(uvSize * uvSize);
+      uBytes.fillRange(0, uBytes.length, 128);
+
+      final vBytes = Uint8List(uvSize * uvSize);
+      vBytes.fillRange(0, vBytes.length, 128);
+
+      final params = ImageParams(
+        width: imageSize,
+        height: imageSize,
+        formatGroup: ImageFormatGroup.yuv420,
+        planes: [
+          PlaneData(bytes: yBytes, bytesPerRow: imageSize),
+          PlaneData(
+            bytes: uBytes,
+            bytesPerRow: uvSize,
+            // bytesPerPixel left null
+          ),
+          PlaneData(
+            bytes: vBytes,
+            bytesPerRow: uvSize,
+            // bytesPerPixel left null
+          ),
+        ],
+      );
+
+      // Should not throw — defaults to 1
+      final result = ColorDetectorNotifier.extractColor(params);
+      expect(result, isNotNull);
+      expect(result!.r, inInclusiveRange(195, 205));
+    });
   });
 }

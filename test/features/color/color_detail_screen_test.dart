@@ -30,14 +30,55 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Test Green'), findsOneWidget);
-    expect(find.text('#00FF00'), findsOneWidget);
+    expect(find.text('#00FF00'), findsWidgets);
 
-    // Check contrast section
+    // Color values section
+    expect(find.text('Color Values'), findsOneWidget);
+    expect(find.text('HEX'), findsWidgets);
+    expect(find.text('RGB'), findsWidgets);
+    expect(find.text('HSL'), findsWidgets);
+    expect(find.text('HSV'), findsOneWidget);
+
+    // Accessibility section
     expect(find.text('Accessibility (WCAG)'), findsOneWidget);
+    expect(find.text('On White'), findsOneWidget);
+    expect(find.text('On Black'), findsOneWidget);
 
-    // Check export
+    // Export section
+    expect(find.text('Export'), findsOneWidget);
     expect(find.text('CSS'), findsOneWidget);
     expect(find.text('JSON'), findsOneWidget);
+    expect(find.text('Sass'), findsOneWidget);
+  });
+
+  testWidgets('contrast badges show correct pass/fail', (tester) async {
+    // Pure white has very high contrast with black and
+    // 1:1 with white.
+    const testColor = ColorModel(
+      hex: '#FFFFFF',
+      r: 255,
+      g: 255,
+      b: 255,
+      name: 'White',
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          colorLibraryProvider.overrideWith(
+            () => FakeLibraryNotifier([testColor]),
+          ),
+          colorHistoryProvider.overrideWith(() => FakeHistoryNotifier()),
+        ],
+        child: const MaterialApp(home: ColorDetailScreen(hex: 'FFFFFF')),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    // AA and AAA badges should exist
+    expect(find.text('AA'), findsWidgets);
+    expect(find.text('AAA'), findsWidgets);
   });
 }
 

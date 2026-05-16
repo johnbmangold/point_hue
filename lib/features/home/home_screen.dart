@@ -7,13 +7,16 @@ import 'package:point_hue/core/router.dart';
 import 'package:point_hue/features/color/color_repository.dart';
 import 'package:point_hue/features/color/color_model.dart';
 
+/// Main screen with live camera preview and color info
+/// overlay.
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorModel = ref.watch(colorDetectorProvider);
-    // Keep providers alive
+
+    // Keep providers alive while on this screen.
     ref.watch(colorLibraryProvider);
     ref.watch(colorHistoryProvider);
 
@@ -25,9 +28,9 @@ class HomeScreen extends ConsumerWidget {
         children: [
           const CameraView(),
 
-          // Header
+          // Header — uses SafeArea-aware positioning.
           Positioned(
-            top: 50,
+            top: MediaQuery.of(context).padding.top + 8,
             left: 20,
             right: 20,
             child: Row(
@@ -37,18 +40,20 @@ class HomeScreen extends ConsumerWidget {
                   icon: const Icon(
                     Icons.collections_bookmark,
                     color: Colors.white,
+                    shadows: [Shadow(blurRadius: 4)],
                   ),
                   onPressed: () => const LibraryRoute().go(context),
                 ),
-                const Text(
+                Text(
                   'PointHue',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    shadows: [const Shadow(blurRadius: 4)],
                   ),
                 ),
-                const SizedBox(width: 48), // Placeholder for balance
+                // Balance the row layout.
+                const SizedBox(width: 48),
               ],
             ),
           ),
@@ -62,15 +67,47 @@ class HomeScreen extends ConsumerWidget {
               colorModel: colorModel,
               onLock: () {
                 HapticFeedback.mediumImpact();
+                final wasLocked = colorModel.isLocked;
                 ref.read(colorDetectorProvider.notifier).toggleLock();
-                if (!colorModel.isLocked) {
+                // Record to history when locking (was
+                // unlocked → now locked).
+                if (!wasLocked) {
                   historyNotifier.addRecord(colorModel);
                 }
               },
               onSave: () {
                 libraryNotifier.saveColor(colorModel);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Color saved to library!')),
+                  SnackBar(
+                    content: Row(
+                      children: [
+                        Icon(
+                          Icons.check_circle,
+                          color: Theme.of(context).colorScheme.onInverseSurface,
+                        ),
+                        const SizedBox(width: 8),
+                        const Text('Color saved to library!'),
+                      ],
+                    ),
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+              },
+              onCopyHex: () {
+                Clipboard.setData(ClipboardData(text: colorModel.hex));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Copied ${colorModel.hex}'),
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    duration: const Duration(seconds: 1),
+                  ),
                 );
               },
             ),
@@ -81,24 +118,30 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
+/// Card that displays the currently detected color
+/// with lock, save, and copy controls.
 class ColorInfoCard extends StatelessWidget {
   final ColorModel colorModel;
   final VoidCallback onLock;
   final VoidCallback onSave;
+  final VoidCallback onCopyHex;
 
   const ColorInfoCard({
     super.key,
     required this.colorModel,
     required this.onLock,
     required this.onSave,
+    required this.onCopyHex,
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor.withValues(alpha: 0.9),
+        color: theme.cardColor.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
@@ -119,7 +162,7 @@ class ColorInfoCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: colorModel.toColor(),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.white24),
+                  border: Border.all(color: theme.dividerColor),
                 ),
               ),
               const SizedBox(width: 16),
@@ -129,27 +172,46 @@ class ColorInfoCard extends StatelessWidget {
                   children: [
                     Text(
                       colorModel.name,
-                      style: const TextStyle(
-                        fontSize: 20,
+                      style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Text(
-                      colorModel.hex,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Theme.of(context).textTheme.bodySmall?.color,
+                    GestureDetector(
+                      onTap: onCopyHex,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            colorModel.hex,
+                            style: theme.textTheme.bodySmall,
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(
+                            Icons.copy,
+                            size: 14,
+                            color: theme.textTheme.bodySmall?.color,
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-              IconButton(
-                icon: Icon(
-                  colorModel.isLocked ? Icons.lock : Icons.lock_open,
-                  color: colorModel.isLocked ? Colors.orange : null,
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                transitionBuilder: (child, animation) {
+                  return ScaleTransition(scale: animation, child: child);
+                },
+                child: IconButton(
+                  key: ValueKey(colorModel.isLocked),
+                  icon: Icon(
+                    colorModel.isLocked ? Icons.lock : Icons.lock_open,
+                    color: colorModel.isLocked
+                        ? theme.colorScheme.primary
+                        : null,
+                  ),
+                  onPressed: onLock,
                 ),
-                onPressed: onLock,
               ),
               IconButton(
                 icon: const Icon(Icons.save_outlined),
@@ -161,24 +223,36 @@ class ColorInfoCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _infoItem('R', colorModel.r.toString()),
-              _infoItem('G', colorModel.g.toString()),
-              _infoItem('B', colorModel.b.toString()),
+              _RgbInfoItem(label: 'R', value: colorModel.r.toString()),
+              _RgbInfoItem(label: 'G', value: colorModel.g.toString()),
+              _RgbInfoItem(label: 'B', value: colorModel.b.toString()),
             ],
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _infoItem(String label, String value) {
+/// Displays a single R/G/B channel label and value.
+class _RgbInfoItem extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _RgbInfoItem({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       children: [
         Text(
           label,
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+          style: theme.textTheme.labelSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        Text(value, style: const TextStyle(fontSize: 16)),
+        Text(value, style: theme.textTheme.bodyLarge),
       ],
     );
   }

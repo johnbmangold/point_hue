@@ -7,14 +7,11 @@ void main() {
     test('identifies exact matches correctly', () {
       expect(ColorNames.matchColor(const Color(0xFFFF0000)).name, 'Red');
       expect(ColorNames.matchColor(const Color(0xFF0000FF)).name, 'Blue');
-      expect(
-        ColorNames.matchColor(const Color(0xFF008000)).name,
-        'Ao',
-      ); // Was Green, now Ao is exact match
+      expect(ColorNames.matchColor(const Color(0xFF008000)).name, 'Ao');
       expect(ColorNames.matchColor(const Color(0xFFFFFFFF)).name, 'White');
       expect(ColorNames.matchColor(const Color(0xFF000000)).name, 'Black');
 
-      // New colors from the expanded list
+      // Expanded list colors
       expect(
         ColorNames.matchColor(const Color(0xFF5D8AA8)).name,
         'Air Force blue',
@@ -34,31 +31,42 @@ void main() {
       // Slightly off-red should still be Red
       expect(ColorNames.matchColor(const Color(0xFFFE0101)).name, 'Red');
 
-      // A mix that is visually close to Teal
-      expect(
-        ColorNames.matchColor(const Color(0xFF008081)).name,
-        'Stormcloud',
-      ); // Was Teal, Stormcloud is closer
+      // Near teal — Teal is now the sole entry for
+      // 0xFF008080 (Stormcloud was removed as duplicate)
+      expect(ColorNames.matchColor(const Color(0xFF008081)).name, 'Teal');
     });
 
     test('distinguishes between similar colors', () {
-      // Lime vs Green
-      expect(
-        ColorNames.matchColor(const Color(0xFF00FF00)).name,
-        'Electric green',
-      ); // Was Lime, Electric green is exact match
-      expect(
-        ColorNames.matchColor(const Color(0xFF008000)).name,
-        'Ao',
-      ); // Was Green, Ao is exact match
+      // 0xFF00FF00 — Green is the primary name now
+      // (Electric green was removed as duplicate)
+      expect(ColorNames.matchColor(const Color(0xFF00FF00)).name, 'Green');
+      expect(ColorNames.matchColor(const Color(0xFF008000)).name, 'Ao');
 
       // Cyan vs Sky Blue
-      expect(
-        ColorNames.matchColor(const Color(0xFF00FFFF)).name,
-        'Aqua',
-      ); // Cyan and Aqua are #00FFFF, Aqua is alphabetically first or preferred in this list
-      // Sky Blue is 0xFF87CEEB
+      expect(ColorNames.matchColor(const Color(0xFF00FFFF)).name, 'Aqua');
       expect(ColorNames.matchColor(const Color(0xFF87CEEB)).name, 'Sky blue');
+    });
+
+    test('handles edge cases correctly', () {
+      // Pure black
+      final black = ColorNames.matchColor(const Color(0xFF000000));
+      expect(black.name, 'Black');
+      expect(black.color, const Color(0xFF000000));
+
+      // Pure white
+      final white = ColorNames.matchColor(const Color(0xFFFFFFFF));
+      expect(white.name, 'White');
+      expect(white.color, const Color(0xFFFFFFFF));
+
+      // Mid-gray
+      final gray = ColorNames.matchColor(const Color(0xFF808080));
+      expect(gray.name, 'Gray');
+    });
+
+    test('returns a NamedColor with matching color', () {
+      final result = ColorNames.matchColor(const Color(0xFFFF0000));
+      expect(result.name, isNotEmpty);
+      expect(result.color, isNotNull);
     });
   });
 }

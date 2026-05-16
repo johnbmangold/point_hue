@@ -17,17 +17,33 @@ void main() {
       ),
     );
 
-    // Initial pump
     await tester.pumpAndSettle();
 
-    // Verification
+    // Verify structure
     expect(find.text('Color Library'), findsOneWidget);
     expect(find.text('Saved'), findsOneWidget);
     expect(find.text('History'), findsOneWidget);
 
-    // Find our fake colors
+    // Verify saved colors
     expect(find.text('Test Red'), findsOneWidget);
     expect(find.text('#FF0000'), findsOneWidget);
+  });
+
+  testWidgets('LibraryScreen shows empty state', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          colorLibraryProvider.overrideWith(() => FakeEmptyLibraryNotifier()),
+          colorHistoryProvider.overrideWith(() => FakeHistoryNotifier()),
+        ],
+        child: const MaterialApp(home: LibraryScreen()),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    // Verify empty state message
+    expect(find.text('No colors yet'), findsOneWidget);
   });
 }
 
@@ -37,6 +53,13 @@ class FakeLibraryNotifier extends ColorLibraryNotifier {
     return [
       const ColorModel(hex: '#FF0000', r: 255, g: 0, b: 0, name: 'Test Red'),
     ];
+  }
+}
+
+class FakeEmptyLibraryNotifier extends ColorLibraryNotifier {
+  @override
+  Future<List<ColorModel>> build() async {
+    return [];
   }
 }
 

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:point_hue/features/color/color_model.dart';
 import 'package:point_hue/features/color/color_repository.dart';
 import 'package:point_hue/core/router.dart';
 
+/// Screen displaying saved colors and color history
+/// in two tabs.
 class LibraryScreen extends ConsumerWidget {
   const LibraryScreen({super.key});
 
@@ -26,8 +29,14 @@ class LibraryScreen extends ConsumerWidget {
             Expanded(
               child: TabBarView(
                 children: [
-                  _ColorList(asyncData: libraryAsync),
-                  _ColorList(asyncData: historyAsync),
+                  _ColorList(
+                    asyncData: libraryAsync,
+                    allowDelete: true,
+                    onDelete: (hex) {
+                      ref.read(colorLibraryProvider.notifier).removeColor(hex);
+                    },
+                  ),
+                  _ColorList(asyncData: historyAsync, allowDelete: false),
                 ],
               ),
             ),
@@ -39,35 +48,128 @@ class LibraryScreen extends ConsumerWidget {
 }
 
 class _ColorList extends StatelessWidget {
-  final AsyncValue asyncData;
+  final AsyncValue<List<ColorModel>> asyncData;
+  final bool allowDelete;
+  final ValueChanged<String>? onDelete;
 
-  const _ColorList({required this.asyncData});
+  const _ColorList({
+    required this.asyncData,
+    this.allowDelete = false,
+    this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return asyncData.when(
-      data: (colors) => ListView.builder(
-        itemCount: colors.length,
-        itemBuilder: (context, index) {
-          final color = colors[index];
-          return ListTile(
-            leading: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: color.toColor(),
-                borderRadius: BorderRadius.circular(8),
-              ),
+      data: (colors) {
+        if (colors.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.palette_outlined,
+                  size: 64,
+                  color: theme.colorScheme.outline,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'No colors yet',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: theme.colorScheme.outline,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Point at something colorful and '
+                  'tap save!',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.outline,
+                  ),
+                ),
+              ],
             ),
-            title: Text(color.name),
-            subtitle: Text(color.hex),
-            onTap: () =>
-                ColorDetailRoute(hex: color.hex.substring(1)).go(context),
           );
-        },
-      ),
+        }
+
+        return ListView.builder(
+          itemCount: colors.length,
+          itemBuilder: (context, index) {
+            final color = colors[index];
+            final tile = ListTile(
+              leading: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: color.toColor(),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: theme.dividerColor),
+                ),
+              ),
+              title: Text(color.name),
+              subtitle: Text(color.hex),
+              trailing: Icon(
+                Icons.chevron_right,
+                color: theme.colorScheme.outline,
+              ),
+              onTap: () {
+                final hexValue = color.hex.replaceAll('#', '');
+                ColorDetailRoute(hex: hexValue).go(context);
+              },
+            );
+
+            if (allowDelete) {
+              return Dismissible(
+                key: ValueKey(color.hex),
+                direction: DismissDirection.endToStart,
+                background: Container(
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.only(right: 24),
+                  color: theme.colorScheme.error,
+                  child: Icon(
+                    Icons.delete_outline,
+                    color: theme.colorScheme.onError,
+                  ),
+                ),
+                onDismissed: (_) {
+                  onDelete?.call(color.hex);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('${color.name} removed'),
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  );
+                },
+                child: tile,
+              );
+            }
+
+            return tile;
+          },
+        );
+      },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, s) => Center(child: Text('Error: $e')),
+      error: (e, s) => Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
+            const SizedBox(height: 12),
+            Text('Failed to load colors', style: theme.textTheme.titleMedium),
+            const SizedBox(height: 4),
+            Text(
+              '$e',
+              style: theme.textTheme.bodySmall,
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

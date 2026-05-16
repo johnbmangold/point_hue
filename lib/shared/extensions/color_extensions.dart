@@ -1,4 +1,4 @@
-import 'dart:math';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 class NamedColor {
@@ -35,7 +35,7 @@ class ColorNames {
     final dl = c1.l - c2.l;
     final da = c1.a - c2.a;
     final db = c1.b - c2.b;
-    return sqrt(dl * dl + da * da + db * db);
+    return math.sqrt(dl * dl + da * da + db * db);
   }
 
   static _LabColor _rgbToLab(Color color) {
@@ -46,17 +46,17 @@ class ColorNames {
 
     // Linearize RGB
     if (r > 0.04045) {
-      r = pow((r + 0.055) / 1.055, 2.4) as double;
+      r = math.pow((r + 0.055) / 1.055, 2.4).toDouble();
     } else {
       r = r / 12.92;
     }
     if (g > 0.04045) {
-      g = pow((g + 0.055) / 1.055, 2.4) as double;
+      g = math.pow((g + 0.055) / 1.055, 2.4).toDouble();
     } else {
       g = g / 12.92;
     }
     if (b > 0.04045) {
-      b = pow((b + 0.055) / 1.055, 2.4) as double;
+      b = math.pow((b + 0.055) / 1.055, 2.4).toDouble();
     } else {
       b = b / 12.92;
     }
@@ -77,17 +77,17 @@ class ColorNames {
     z /= 108.883;
 
     if (x > 0.008856) {
-      x = pow(x, 1 / 3) as double;
+      x = math.pow(x, 1 / 3).toDouble();
     } else {
       x = (7.787 * x) + (16 / 116);
     }
     if (y > 0.008856) {
-      y = pow(y, 1 / 3) as double;
+      y = math.pow(y, 1 / 3).toDouble();
     } else {
       y = (7.787 * y) + (16 / 116);
     }
     if (z > 0.008856) {
-      z = pow(z, 1 / 3) as double;
+      z = math.pow(z, 1 / 3).toDouble();
     } else {
       z = (7.787 * z) + (16 / 116);
     }
@@ -124,7 +124,7 @@ class ColorNames {
     'Ash grey': Color(0xFFB2BEB5),
     'Asparagus': Color(0xFF87A96B),
     'Atomic tangerine': Color(0xFFFF9966),
-    'Auburn': Color(0xFFA52A2A),
+    // Auburn removed — duplicate of Brown (0xFFA52A2A)
     'Aureolin': Color(0xFFFDEE00),
     'AuroMetalSaurus': Color(0xFF6E7F80),
     'Awesome': Color(0xFFFF2052),
@@ -153,7 +153,7 @@ class ColorNames {
     'Blue Bell': Color(0xFFA2A2D0),
     'Blue Gray': Color(0xFF6699CC),
     'Blue green': Color(0xFF0D98BA),
-    'Blue purple': Color(0xFF8A2BE2),
+    // Blue purple removed — duplicate of Blue violet
     'Blue violet': Color(0xFF8A2BE2),
     'Blush': Color(0xFFDE5D83),
     'Bole': Color(0xFF79443B),
@@ -237,11 +237,11 @@ class ColorNames {
     'Chrome yellow': Color(0xFFFFA700),
     'Cinereous': Color(0xFF98817B),
     'Cinnabar': Color(0xFFE34234),
-    'Cinnamon': Color(0xFFD2691E),
+    // Cinnamon removed — duplicate of Chocolate
     'Citrine': Color(0xFFE4D00A),
     'Classic rose': Color(0xFFFBCCE7),
     'Cobalt': Color(0xFF0047AB),
-    'Cocoa brown': Color(0xFFD2691E),
+    // Cocoa brown removed — duplicate of Chocolate
     'Coffee': Color(0xFF6F4E37),
     'Columbia blue': Color(0xFF9BDDFF),
     'Cool black': Color(0xFF002E63),
@@ -281,7 +281,7 @@ class ColorNames {
     'Dark green': Color(0xFF013220),
     'Dark jungle green': Color(0xFF1A2421),
     'Dark khaki': Color(0xFFBDB76B),
-    'Dark lava': Color(0xFF483C32),
+    // Dark lava removed — duplicate of Taupe
     'Dark lavender': Color(0xFF734F96),
     'Dark magenta': Color(0xFF8B008B),
     'Dark midnight blue': Color(0xFF003366),
@@ -305,7 +305,7 @@ class ColorNames {
     'Dark spring green': Color(0xFF177245),
     'Dark tan': Color(0xFF918151),
     'Dark tangerine': Color(0xFFFFA812),
-    'Dark taupe': Color(0xFF483C32),
+    // Dark taupe removed — duplicate of Taupe
     'Dark terra cotta': Color(0xFFCC4E5C),
     'Dark turquoise': Color(0xFF00CED1),
     'Dark violet': Color(0xFF9400D3),
@@ -316,7 +316,7 @@ class ColorNames {
     'Deep carmine pink': Color(0xFFEF3038),
     'Deep carrot orange': Color(0xFFE9692C),
     'Deep cerise': Color(0xFFDA3287),
-    'Deep champagne': Color(0xFFFAD6A5),
+    // Deep champagne removed — duplicate of Champagne
     'Deep chestnut': Color(0xFFB94E48),
     'Deep coffee': Color(0xFF704241),
     'Deep fuchsia': Color(0xFFC154C1),
@@ -343,20 +343,20 @@ class ColorNames {
     'Egyptian blue': Color(0xFF1034A6),
     'Electric blue': Color(0xFF7DF9FF),
     'Electric crimson': Color(0xFFFF003F),
-    'Electric cyan': Color(0xFF00FFFF),
-    'Electric green': Color(0xFF00FF00),
+    // Electric cyan removed — duplicate of Aqua/Cyan
+    // Electric green removed — duplicate of Green
     'Electric indigo': Color(0xFF6F00FF),
-    'Electric lavender': Color(0xFFF4BBFF),
+    // Electric lavender removed — dup of Brilliant lavender
     'Electric lime': Color(0xFFCCFF00),
     'Electric purple': Color(0xFFBF00FF),
     'Electric ultramarine': Color(0xFF3F00FF),
     'Electric violet': Color(0xFF8F00FF),
-    'Electric yellow': Color(0xFFFFFF00),
+    // Electric yellow removed — duplicate of Yellow
     'Emerald': Color(0xFF50C878),
     'Eton blue': Color(0xFF96C8A2),
     'Fallow': Color(0xFFC19A6B),
     'Falu red': Color(0xFF801818),
-    'Famous': Color(0xFFFF00FF),
+    // Famous removed — duplicate of Magenta/Fuchsia
     'Fandango': Color(0xFFB53389),
     'Fashion fuchsia': Color(0xFFF400A1),
     'Fawn': Color(0xFFE5AA70),
@@ -372,9 +372,9 @@ class ColorNames {
     'Flavescent': Color(0xFFF7E98E),
     'Flax': Color(0xFFEEDC82),
     'Floral white': Color(0xFFFFFAF0),
-    'Fluorescent orange': Color(0xFFFFBF00),
-    'Fluorescent pink': Color(0xFFFF1493),
-    'Fluorescent yellow': Color(0xFFCCFF00),
+    // Fluorescent orange removed — duplicate of Amber
+    // Fluorescent pink removed — duplicate of Deep pink
+    // Fluorescent yellow removed — dup of Electric lime
     'Folly': Color(0xFFFF004F),
     'Forest green': Color(0xFF228B22),
     'French beige': Color(0xFFA67B5B),
@@ -413,7 +413,7 @@ class ColorNames {
     'Harvest Gold': Color(0xFFDA9100),
     'Heart Gold': Color(0xFF808000),
     'Heliotrope': Color(0xFFDF73FF),
-    'Hollywood cerise': Color(0xFFF400A1),
+    // Hollywood cerise removed — dup of Fashion fuchsia
     'Honeydew': Color(0xFFF0FFF0),
     'Hooker green': Color(0xFF49796B),
     'Hot magenta': Color(0xFFFF1DCE),
@@ -452,8 +452,8 @@ class ColorNames {
     'Lavender blush': Color(0xFFFFF0F5),
     'Lavender gray': Color(0xFFC4C3D0),
     'Lavender indigo': Color(0xFF9457EB),
-    'Lavender magenta': Color(0xFFEE82EE),
-    'Lavender mist': Color(0xFFE6E6FA),
+    // Lavender magenta removed — duplicate of Violet
+    // Lavender mist removed — duplicate of Lavender
     'Lavender pink': Color(0xFFFBAED2),
     'Lavender purple': Color(0xFF967BB6),
     'Lavender rose': Color(0xFFFBA0E3),
@@ -547,7 +547,7 @@ class ColorNames {
     'Mountain Meadow': Color(0xFF30BA8F),
     'Mountbatten pink': Color(0xFF997A8D),
     'Mulberry': Color(0xFFC54B8C),
-    'Munsell': Color(0xFFF2F3F4),
+    // Munsell removed — duplicate of Anti-flash white
     'Mustard': Color(0xFFFFDB58),
     'Myrtle': Color(0xFF21421E),
     'Nadeshiko pink': Color(0xFFF6ADC6),
@@ -579,7 +579,7 @@ class ColorNames {
     'Orange peel': Color(0xFFFF9F00),
     'Orange red': Color(0xFFFF4500),
     'Orchid': Color(0xFFDA70D6),
-    'Otter brown': Color(0xFF654321),
+    // Otter brown removed — duplicate of Dark brown
     'Outer Space': Color(0xFF414A4C),
     'Outrageous Orange': Color(0xFFFF6E4A),
     'Oxford Blue': Color(0xFF002147),
@@ -590,7 +590,7 @@ class ColorNames {
     'Pale aqua': Color(0xFFBCD4E6),
     'Pale blue': Color(0xFFAFEEEE),
     'Pale brown': Color(0xFF987654),
-    'Pale carmine': Color(0xFFAF4035),
+    // Pale carmine removed — dup of Medium carmine
     'Pale cerulean': Color(0xFF9BC4E2),
     'Pale chestnut': Color(0xFFDDADAF),
     'Pale copper': Color(0xFFDA8A67),
@@ -601,16 +601,16 @@ class ColorNames {
     'Pale lavender': Color(0xFFDCD0FF),
     'Pale magenta': Color(0xFFF984E5),
     'Pale pink': Color(0xFFFADADD),
-    'Pale plum': Color(0xFFDDA0DD),
+    // Pale plum removed — duplicate of Plum
     'Pale red violet': Color(0xFFDB7093),
     'Pale robin egg blue': Color(0xFF96DED1),
     'Pale silver': Color(0xFFC9C0BB),
     'Pale spring bud': Color(0xFFECEBBD),
     'Pale taupe': Color(0xFFBC987E),
-    'Pale violet red': Color(0xFFDB7093),
+    // Pale violet red removed — dup of Pale red violet
     'Pansy purple': Color(0xFF78184A),
     'Papaya whip': Color(0xFFFFEFD5),
-    'Paris Green': Color(0xFF50C878),
+    // Paris Green removed — duplicate of Emerald
     'Pastel blue': Color(0xFFAEC6CF),
     'Pastel brown': Color(0xFF836953),
     'Pastel gray': Color(0xFFCFCFC4),
@@ -655,7 +655,7 @@ class ColorNames {
     'Powder blue': Color(0xFFB0E0E6),
     'Princeton orange': Color(0xFFFF8F00),
     'Prussian blue': Color(0xFF003153),
-    'Psychedelic purple': Color(0xFFDF00FF),
+    // Psychedelic purple removed — duplicate of Phlox
     'Puce': Color(0xFFCC8899),
     'Pumpkin': Color(0xFFFF7518),
     'Purple': Color(0xFF800080),
@@ -675,8 +675,8 @@ class ColorNames {
     'Razzmatazz': Color(0xFFE3256B),
     'Red': Color(0xFFFF0000),
     'Red Orange': Color(0xFFFF5349),
-    'Red brown': Color(0xFFA52A2A),
-    'Red violet': Color(0xFFC71585),
+    // Red brown removed — duplicate of Brown
+    // Red violet removed — dup of Medium violet red
     'Rich black': Color(0xFF004040),
     'Rich carmine': Color(0xFFD70040),
     'Rich electric blue': Color(0xFF0892D0),
@@ -753,7 +753,7 @@ class ColorNames {
     'Steel blue': Color(0xFF4682B4),
     'Stil de grain yellow': Color(0xFFFADA5E),
     'Stizza': Color(0xFF990000),
-    'Stormcloud': Color(0xFF008080),
+    // Stormcloud removed — duplicate of Teal
     'Straw': Color(0xFFE4D96F),
     'Sunglow': Color(0xFFFFCC33),
     'Sunset': Color(0xFFFAD6A5),
@@ -782,7 +782,7 @@ class ColorNames {
     'Toolbox': Color(0xFF746CC0),
     'Topaz': Color(0xFFFFC87C),
     'Tractor red': Color(0xFFFD0E35),
-    'Trolley Grey': Color(0xFF808080),
+    // Trolley Grey removed — duplicate of Gray
     'Tropical rain forest': Color(0xFF00755E),
     'True Blue': Color(0xFF0073CF),
     'Tufts Blue': Color(0xFF417DC1),
@@ -830,7 +830,7 @@ class ColorNames {
     'Vivid tangerine': Color(0xFFFFA089),
     'Vivid violet': Color(0xFF9F00FF),
     'Warm black': Color(0xFF004242),
-    'Waterspout': Color(0xFF00FFFF),
+    // Waterspout removed — duplicate of Aqua/Cyan
     'Wenge': Color(0xFF645452),
     'Wheat': Color(0xFFF5DEB3),
     'White': Color(0xFFFFFFFF),
