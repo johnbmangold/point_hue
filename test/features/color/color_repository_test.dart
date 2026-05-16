@@ -33,6 +33,17 @@ void main() {
       expect(colors.first.hex, color.hex);
     });
 
+    test('saveColor prevents duplicates', () async {
+      final notifier = container.read(colorLibraryProvider.notifier);
+      const color = ColorModel(hex: '#FF0000', r: 255, g: 0, b: 0, name: 'Red');
+
+      await notifier.saveColor(color);
+      await notifier.saveColor(color);
+
+      final colors = await container.read(colorLibraryProvider.future);
+      expect(colors.length, 1);
+    });
+
     test('removeColor removes a color', () async {
       final notifier = container.read(colorLibraryProvider.notifier);
       const color = ColorModel(hex: '#FF0000', r: 255, g: 0, b: 0, name: 'Red');
@@ -74,7 +85,7 @@ void main() {
       expect(history.first.hex, color.hex);
     });
 
-    test('addRecord does not duplicate consecutive colors', () async {
+    test('addRecord does not duplicate consecutive', () async {
       final notifier = container.read(colorHistoryProvider.notifier);
       const color = ColorModel(
         hex: '#00FF00',
@@ -89,6 +100,21 @@ void main() {
 
       final history = await container.read(colorHistoryProvider.future);
       expect(history.length, 1);
+    });
+
+    test('addRecord enforces max 20 items', () async {
+      final notifier = container.read(colorHistoryProvider.notifier);
+
+      // Add 25 distinct colors
+      for (int i = 0; i < 25; i++) {
+        final hexStr = i.toRadixString(16).padLeft(2, '0');
+        await notifier.addRecord(
+          ColorModel(hex: '#${hexStr}0000', r: i, g: 0, b: 0, name: 'Color $i'),
+        );
+      }
+
+      final history = await container.read(colorHistoryProvider.future);
+      expect(history.length, 20);
     });
   });
 }

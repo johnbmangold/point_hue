@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -24,6 +26,7 @@ class CameraNotifier extends _$CameraNotifier {
 
     if (cameraState != null) {
       ref.onDispose(() {
+        _stopStreamSafely(cameraState.controller);
         cameraState.controller.dispose();
       });
     }
@@ -43,7 +46,6 @@ class CameraNotifier extends _$CameraNotifier {
       if (index != null) {
         cameraIndex = index % cameras.length;
       } else {
-        // Find the first back camera
         final backCameraIndex = cameras.indexWhere(
           (camera) => camera.lensDirection == CameraLensDirection.back,
         );
@@ -52,7 +54,7 @@ class CameraNotifier extends _$CameraNotifier {
 
       final controller = CameraController(
         cameras[cameraIndex],
-        ResolutionPreset.veryHigh,
+        ResolutionPreset.medium,
         enableAudio: false,
       );
 
@@ -61,8 +63,13 @@ class CameraNotifier extends _$CameraNotifier {
         controller: controller,
         currentCameraIndex: cameraIndex,
       );
-    } catch (e) {
-      debugPrint('Error initializing camera: $e');
+    } catch (e, s) {
+      developer.log(
+        'Error initializing camera',
+        name: 'point_hue.camera',
+        error: e,
+        stackTrace: s,
+      );
       return null;
     }
   }
@@ -76,7 +83,8 @@ class CameraNotifier extends _$CameraNotifier {
 
     final nextIndex = (currentState.currentCameraIndex + 1) % cameras.length;
 
-    // Dispose old controller
+    // Stop stream and dispose old controller.
+    await _stopStreamSafely(currentState.controller);
     await currentState.controller.dispose();
 
     state = const AsyncLoading();
@@ -96,8 +104,29 @@ class CameraNotifier extends _$CameraNotifier {
         newFlashMode ? FlashMode.torch : FlashMode.off,
       );
       state = AsyncData(currentState.copyWith(isFlashOn: newFlashMode));
-    } catch (e) {
-      debugPrint('Error toggling flash: $e');
+    } catch (e, s) {
+      developer.log(
+        'Error toggling flash',
+        name: 'point_hue.camera',
+        error: e,
+        stackTrace: s,
+      );
+    }
+  }
+
+  /// Safely stops the image stream if it is active.
+  Future<void> _stopStreamSafely(CameraController controller) async {
+    try {
+      if (controller.value.isStreamingImages) {
+        await controller.stopImageStream();
+      }
+    } catch (e, s) {
+      developer.log(
+        'Error stopping image stream',
+        name: 'point_hue.camera',
+        error: e,
+        stackTrace: s,
+      );
     }
   }
 }

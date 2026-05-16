@@ -8,8 +8,7 @@ import 'package:mockito/mockito.dart';
 import 'package:point_hue/features/camera/camera_controller.dart';
 import 'package:point_hue/features/color/color_detector.dart';
 import 'package:point_hue/features/color/color_model.dart';
-// import 'package:point_hue/features/color/color_repository.dart'; // Does not exist as class
-import 'package:point_hue/features/color/color_repository.dart'; // Imports notifiers
+import 'package:point_hue/features/color/color_repository.dart';
 import 'package:point_hue/features/home/home_screen.dart';
 
 import 'home_screen_test.mocks.dart';
@@ -21,8 +20,6 @@ void main() {
   setUp(() {
     mockCameraController = MockCameraController();
 
-    mockCameraController = MockCameraController();
-    // Stub functionality to prevent crashes
     when(mockCameraController.value).thenReturn(
       const CameraValue(
         isInitialized: true,
@@ -48,7 +45,7 @@ void main() {
 
     when(mockCameraController.buildPreview()).thenReturn(const SizedBox());
 
-    // Mock Methods Channels
+    // Mock method channels
     const MethodChannel cameraChannel = MethodChannel(
       'plugins.flutter.io/camera',
     );
@@ -69,24 +66,20 @@ void main() {
   });
 
   testWidgets('HomeScreen renders correctly', (tester) async {
-    // Override providers
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          // Override camera provider with a dummy state or notifier
           cameraProvider.overrideWith(
             () => FakeCameraNotifier(mockCameraController),
           ),
           colorLibraryProvider.overrideWith(() => FakeLibraryNotifier()),
           colorHistoryProvider.overrideWith(() => FakeHistoryNotifier()),
-          // Ensure detector provider returns initial state
           colorDetectorProvider.overrideWith(() => FakeColorDetectorNotifier()),
         ],
         child: const MaterialApp(home: HomeScreen()),
       ),
     );
 
-    // Initial pump
     await tester.pump();
 
     // Verify key elements
@@ -96,6 +89,37 @@ void main() {
 
     // ColorInfoCard should appear
     expect(find.byType(ColorInfoCard), findsOneWidget);
+
+    // Verify copy icon is present
+    expect(find.byIcon(Icons.copy), findsOneWidget);
+  });
+
+  testWidgets('Lock toggles icon', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          cameraProvider.overrideWith(
+            () => FakeCameraNotifier(mockCameraController),
+          ),
+          colorLibraryProvider.overrideWith(() => FakeLibraryNotifier()),
+          colorHistoryProvider.overrideWith(() => FakeHistoryNotifier()),
+          colorDetectorProvider.overrideWith(() => FakeColorDetectorNotifier()),
+        ],
+        child: const MaterialApp(home: HomeScreen()),
+      ),
+    );
+
+    await tester.pump();
+
+    // Initially unlocked
+    expect(find.byIcon(Icons.lock_open), findsOneWidget);
+
+    // Tap lock
+    await tester.tap(find.byIcon(Icons.lock_open));
+    await tester.pumpAndSettle();
+
+    // Now locked
+    expect(find.byIcon(Icons.lock), findsOneWidget);
   });
 }
 
