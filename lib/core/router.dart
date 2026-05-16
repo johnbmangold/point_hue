@@ -26,8 +26,13 @@ class LibraryRoute extends GoRouteData with $LibraryRoute {
   const LibraryRoute();
 
   @override
-  Widget build(BuildContext context, GoRouterState state) =>
-      const LibraryScreen();
+  Page<void> buildPage(BuildContext context, GoRouterState state) =>
+      CustomTransitionPage(
+        key: state.pageKey,
+        child: const LibraryScreen(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+            FadeTransition(opacity: animation, child: child),
+      );
 }
 
 class ColorDetailRoute extends GoRouteData with $ColorDetailRoute {
@@ -35,6 +40,11 @@ class ColorDetailRoute extends GoRouteData with $ColorDetailRoute {
   const ColorDetailRoute({required this.hex});
 
   @override
-  Widget build(BuildContext context, GoRouterState state) =>
-      ColorDetailScreen(hex: hex);
+  Page<void> buildPage(BuildContext context, GoRouterState state) =>
+      CustomTransitionPage(
+        key: state.pageKey,
+        child: ColorDetailScreen(hex: hex),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+            FadeTransition(opacity: animation, child: child),
+      );
 }

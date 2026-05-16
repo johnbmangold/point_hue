@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:point_hue/features/color/color_detail_screen.dart';
 import 'package:point_hue/features/color/color_model.dart';
 import 'package:point_hue/features/color/color_repository.dart';
+import 'package:point_hue/core/theme.dart';
 
 void main() {
   testWidgets('ColorDetailScreen displays correct color info', (tester) async {
@@ -23,7 +24,10 @@ void main() {
           ),
           colorHistoryProvider.overrideWith(() => FakeHistoryNotifier()),
         ],
-        child: const MaterialApp(home: ColorDetailScreen(hex: '00FF00')),
+        child: MaterialApp(
+          theme: PointHueTheme.light,
+          home: const ColorDetailScreen(hex: '00FF00'),
+        ),
       ),
     );
 
@@ -33,22 +37,22 @@ void main() {
     expect(find.text('#00FF00'), findsWidgets);
 
     // Color values section
-    expect(find.text('Color Values'), findsOneWidget);
+    expect(find.text('Values'), findsOneWidget);
     expect(find.text('HEX'), findsWidgets);
     expect(find.text('RGB'), findsWidgets);
     expect(find.text('HSL'), findsWidgets);
     expect(find.text('HSV'), findsOneWidget);
 
     // Accessibility section
-    expect(find.text('Accessibility (WCAG)'), findsOneWidget);
-    expect(find.text('On White'), findsOneWidget);
-    expect(find.text('On Black'), findsOneWidget);
+    expect(find.text('Accessibility (WCAG 2.1)'), findsOneWidget);
+    expect(find.text('White Text'), findsOneWidget);
+    expect(find.text('Black Text'), findsOneWidget);
 
     // Export section
     expect(find.text('Export'), findsOneWidget);
-    expect(find.text('CSS'), findsOneWidget);
-    expect(find.text('JSON'), findsOneWidget);
-    expect(find.text('Sass'), findsOneWidget);
+    expect(find.text('Copy CSS'), findsOneWidget);
+    expect(find.text('Copy Swift'), findsOneWidget);
+    expect(find.text('Copy Flutter'), findsOneWidget);
   });
 
   testWidgets('contrast badges show correct pass/fail', (tester) async {
@@ -70,15 +74,19 @@ void main() {
           ),
           colorHistoryProvider.overrideWith(() => FakeHistoryNotifier()),
         ],
-        child: const MaterialApp(home: ColorDetailScreen(hex: 'FFFFFF')),
+        child: MaterialApp(
+          theme: PointHueTheme.light,
+          home: const ColorDetailScreen(hex: 'FFFFFF'),
+        ),
       ),
     );
 
     await tester.pumpAndSettle();
 
-    // AA and AAA badges should exist
-    expect(find.text('AA'), findsWidgets);
-    expect(find.text('AAA'), findsWidgets);
+    // One should be AAA (on black), one should be FAIL (on white)
+    expect(find.text('FAIL'), findsOneWidget);
+    expect(find.text('AAA'), findsOneWidget);
+    expect(find.text('AA'), findsNothing);
   });
 }
 
