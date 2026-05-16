@@ -10,6 +10,7 @@ import 'package:point_hue/features/color/color_detector.dart';
 import 'package:point_hue/features/color/color_model.dart';
 import 'package:point_hue/features/color/color_repository.dart';
 import 'package:point_hue/features/home/home_screen.dart';
+import 'package:point_hue/core/theme.dart';
 
 import 'home_screen_test.mocks.dart';
 
@@ -76,7 +77,10 @@ void main() {
           colorHistoryProvider.overrideWith(() => FakeHistoryNotifier()),
           colorDetectorProvider.overrideWith(() => FakeColorDetectorNotifier()),
         ],
-        child: const MaterialApp(home: HomeScreen()),
+        child: MaterialApp(
+          theme: PointHueTheme.light,
+          home: const HomeScreen(),
+        ),
       ),
     );
 
@@ -105,18 +109,23 @@ void main() {
           colorHistoryProvider.overrideWith(() => FakeHistoryNotifier()),
           colorDetectorProvider.overrideWith(() => FakeColorDetectorNotifier()),
         ],
-        child: const MaterialApp(home: HomeScreen()),
+        child: MaterialApp(
+          theme: PointHueTheme.light,
+          home: const HomeScreen(),
+        ),
       ),
     );
 
-    await tester.pump();
+    await tester.pump(
+      const Duration(seconds: 1),
+    ); // Wait for slide-up animation
 
     // Initially unlocked
     expect(find.byIcon(Icons.lock_open), findsOneWidget);
 
     // Tap lock
-    await tester.tap(find.byIcon(Icons.lock_open));
-    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.lock_open), warnIfMissed: false);
+    await tester.pump(const Duration(milliseconds: 500));
 
     // Now locked
     expect(find.byIcon(Icons.lock), findsOneWidget);

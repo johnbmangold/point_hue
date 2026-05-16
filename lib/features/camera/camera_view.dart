@@ -3,6 +3,8 @@ import 'dart:developer' as developer;
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:point_hue/core/theme.dart';
 import 'package:point_hue/features/camera/camera_controller.dart';
 import 'package:point_hue/features/color/color_detector.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -83,16 +85,12 @@ class _CameraViewState extends ConsumerState<CameraView>
 
     final cameraState = ref.watch(cameraProvider);
     final theme = Theme.of(context);
+    final overlay = theme.extension<PointHueOverlayTheme>()!;
 
     return cameraState.when(
       data: (state) {
         if (state == null) {
-          return Center(
-            child: Text(
-              'No camera available',
-              style: theme.textTheme.bodyLarge,
-            ),
-          );
+          return _PermissionDeniedView(theme: theme);
         }
         return Stack(
           fit: StackFit.expand,
@@ -110,6 +108,8 @@ class _CameraViewState extends ConsumerState<CameraView>
                     heroTag: 'flip_camera',
                     icon: Icons.flip_camera_ios,
                     isActive: false,
+                    tooltip: 'Switch camera',
+                    overlayTheme: overlay,
                     onPressed: () {
                       ref.read(cameraProvider.notifier).switchCamera();
                     },
@@ -119,6 +119,10 @@ class _CameraViewState extends ConsumerState<CameraView>
                     heroTag: 'toggle_flash',
                     icon: state.isFlashOn ? Icons.flash_on : Icons.flash_off,
                     isActive: state.isFlashOn,
+                    tooltip: state.isFlashOn
+                        ? 'Turn flash off'
+                        : 'Turn flash on',
+                    overlayTheme: overlay,
                     onPressed: () {
                       ref.read(cameraProvider.notifier).toggleFlash();
                     },
@@ -150,18 +154,71 @@ class _CameraViewState extends ConsumerState<CameraView>
   }
 }
 
+/// View shown when camera permission is denied.
+class _PermissionDeniedView extends StatelessWidget {
+  final ThemeData theme;
+
+  const _PermissionDeniedView({required this.theme});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.camera_alt_outlined,
+              size: 64,
+              color: theme.colorScheme.outline,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Camera Access Required',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'PointHue needs camera access to '
+              'detect colors from your surroundings.',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.outline,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            FilledButton.icon(
+              onPressed: () => openAppSettings(),
+              icon: const Icon(Icons.settings),
+              label: const Text('Open Settings'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 /// Semi-transparent floating action button for camera
-/// controls.
+/// controls with themed colors.
 class _CameraActionButton extends StatelessWidget {
   final String heroTag;
   final IconData icon;
   final bool isActive;
+  final String tooltip;
+  final PointHueOverlayTheme overlayTheme;
   final VoidCallback onPressed;
 
   const _CameraActionButton({
     required this.heroTag,
     required this.icon,
     required this.isActive,
+    required this.tooltip,
+    required this.overlayTheme,
     required this.onPressed,
   });
 
@@ -171,61 +228,109 @@ class _CameraActionButton extends StatelessWidget {
       heroTag: heroTag,
       mini: true,
       backgroundColor: isActive
-          ? Colors.yellow.withValues(alpha: 0.5)
-          : Colors.white.withValues(alpha: 0.3),
+          ? overlayTheme.activeIndicator.withValues(alpha: 0.5)
+          : overlayTheme.overlayIcon.withValues(alpha: 0.3),
+      tooltip: tooltip,
       onPressed: onPressed,
-      child: Icon(icon, color: Colors.white),
+      child: Icon(icon, color: overlayTheme.overlayIcon),
     );
   }
 }
 
-/// Circular bubble showing the currently detected color.
+/// Circular bubble showing the currently detected
+/// color with semantic description.
 class ColorPreviewBubble extends ConsumerWidget {
   const ColorPreviewBubble({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorModel = ref.watch(colorDetectorProvider);
+    final overlay = Theme.of(context).extension<PointHueOverlayTheme>()!;
 
-    return Container(
-      width: 100,
-      height: 100,
-      decoration: BoxDecoration(
-        color: colorModel.toColor(),
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.white, width: 3),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 10),
-        ],
-      ),
-      child: const Center(
-        child: Icon(Icons.add, color: Colors.white, size: 20),
+    return Semantics(
+      label:
+          'Color preview: ${colorModel.name}, '
+          '${colorModel.hex}',
+      child: Container(
+        width: 100,
+        height: 100,
+        decoration: BoxDecoration(
+          color: colorModel.toColor(),
+          shape: BoxShape.circle,
+          border: Border.all(color: overlay.overlayIcon, width: 3),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.5),
+              blurRadius: 10,
+            ),
+          ],
+        ),
+        child: Center(
+          child: Icon(Icons.colorize, color: overlay.overlayIcon, size: 20),
+        ),
       ),
     );
   }
 }
 
-/// Cross-hair reticle at the center of the screen.
-class ReticleOverlay extends StatelessWidget {
+/// Animated cross-hair reticle at the center of the
+/// screen with a gentle pulsing effect.
+class ReticleOverlay extends StatefulWidget {
   const ReticleOverlay({super.key});
 
   @override
+  State<ReticleOverlay> createState() => _ReticleOverlayState();
+}
+
+class _ReticleOverlayState extends State<ReticleOverlay>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
+    _scaleAnimation = Tween<double>(
+      begin: 0.92,
+      end: 1.08,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final overlay = Theme.of(context).extension<PointHueOverlayTheme>()!;
+
     return Center(
-      child: Container(
-        width: 30,
-        height: 30,
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.white, width: 2),
-          shape: BoxShape.circle,
-        ),
-        child: Center(
+      child: Semantics(
+        label: 'Color detection reticle',
+        child: ScaleTransition(
+          scale: _scaleAnimation,
           child: Container(
-            width: 4,
-            height: 4,
-            decoration: const BoxDecoration(
-              color: Colors.white,
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              border: Border.all(color: overlay.reticle, width: 2),
               shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Container(
+                width: 4,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: overlay.reticle,
+                  shape: BoxShape.circle,
+                ),
+              ),
             ),
           ),
         ),

@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:point_hue/features/color/color_model.dart';
 import 'package:point_hue/features/color/color_repository.dart';
 import 'package:point_hue/features/color/library_screen.dart';
+import 'package:point_hue/core/theme.dart';
 
 void main() {
   testWidgets('LibraryScreen displays saved colors', (tester) async {
@@ -13,7 +14,10 @@ void main() {
           colorLibraryProvider.overrideWith(() => FakeLibraryNotifier()),
           colorHistoryProvider.overrideWith(() => FakeHistoryNotifier()),
         ],
-        child: const MaterialApp(home: LibraryScreen()),
+        child: MaterialApp(
+          theme: PointHueTheme.light,
+          home: const LibraryScreen(),
+        ),
       ),
     );
 
@@ -36,7 +40,10 @@ void main() {
           colorLibraryProvider.overrideWith(() => FakeEmptyLibraryNotifier()),
           colorHistoryProvider.overrideWith(() => FakeHistoryNotifier()),
         ],
-        child: const MaterialApp(home: LibraryScreen()),
+        child: MaterialApp(
+          theme: PointHueTheme.light,
+          home: const LibraryScreen(),
+        ),
       ),
     );
 

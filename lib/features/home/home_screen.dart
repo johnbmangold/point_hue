@@ -4,11 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:point_hue/features/camera/camera_view.dart';
 import 'package:point_hue/features/color/color_detector.dart';
 import 'package:point_hue/core/router.dart';
+import 'package:point_hue/core/theme.dart';
 import 'package:point_hue/features/color/color_repository.dart';
 import 'package:point_hue/features/color/color_model.dart';
 
-/// Main screen with live camera preview and color info
-/// overlay.
+/// Main screen with live camera preview and color
+/// info overlay.
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
@@ -22,6 +23,8 @@ class HomeScreen extends ConsumerWidget {
 
     final libraryNotifier = ref.read(colorLibraryProvider.notifier);
     final historyNotifier = ref.read(colorHistoryProvider.notifier);
+    final savedColors = ref.watch(colorLibraryProvider).value ?? [];
+    final isAlreadySaved = savedColors.any((c) => c.hex == colorModel.hex);
 
     return Scaffold(
       body: Stack(
@@ -42,6 +45,7 @@ class HomeScreen extends ConsumerWidget {
                     color: Colors.white,
                     shadows: [Shadow(blurRadius: 4)],
                   ),
+                  tooltip: 'Color library',
                   onPressed: () => const LibraryRoute().go(context),
                 ),
                 Text(
@@ -58,61 +62,124 @@ class HomeScreen extends ConsumerWidget {
             ),
           ),
 
-          // Bottom Info Card
-          Positioned(
-            bottom: 40,
-            left: 20,
-            right: 20,
-            child: ColorInfoCard(
-              colorModel: colorModel,
-              onLock: () {
-                HapticFeedback.mediumImpact();
-                final wasLocked = colorModel.isLocked;
-                ref.read(colorDetectorProvider.notifier).toggleLock();
-                // Record to history when locking (was
-                // unlocked → now locked).
-                if (!wasLocked) {
-                  historyNotifier.addRecord(colorModel);
-                }
-              },
-              onSave: () {
-                libraryNotifier.saveColor(colorModel);
+          // Bottom Info Card with slide-up entrance.
+          _AnimatedColorInfoCard(
+            colorModel: colorModel,
+            isAlreadySaved: isAlreadySaved,
+            onLock: () {
+              HapticFeedback.mediumImpact();
+              final wasLocked = colorModel.isLocked;
+              ref.read(colorDetectorProvider.notifier).toggleLock();
+              // Record to history when locking.
+              if (!wasLocked) {
+                historyNotifier.addRecord(colorModel);
+              }
+            },
+            onSave: () {
+              if (isAlreadySaved) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Row(
-                      children: [
-                        Icon(
-                          Icons.check_circle,
-                          color: Theme.of(context).colorScheme.onInverseSurface,
-                        ),
-                        const SizedBox(width: 8),
-                        const Text('Color saved to library!'),
-                      ],
-                    ),
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    duration: const Duration(seconds: 2),
-                  ),
-                );
-              },
-              onCopyHex: () {
-                Clipboard.setData(ClipboardData(text: colorModel.hex));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Copied ${colorModel.hex}'),
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                  PointHueSnackBar.create(
+                    context: context,
+                    message: 'Already in library',
+                    icon: Icons.info_outline,
                     duration: const Duration(seconds: 1),
                   ),
                 );
-              },
-            ),
+                return;
+              }
+              libraryNotifier.saveColor(colorModel);
+              ScaffoldMessenger.of(context).showSnackBar(
+                PointHueSnackBar.create(
+                  context: context,
+                  message: 'Color saved to library!',
+                  icon: Icons.check_circle,
+                ),
+              );
+            },
+            onCopyHex: () {
+              Clipboard.setData(ClipboardData(text: colorModel.hex));
+              ScaffoldMessenger.of(context).showSnackBar(
+                PointHueSnackBar.create(
+                  context: context,
+                  message: 'Copied ${colorModel.hex}',
+                  icon: Icons.copy,
+                  duration: const Duration(seconds: 1),
+                ),
+              );
+            },
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Animates the [ColorInfoCard] with a slide-up
+/// and fade-in entrance.
+class _AnimatedColorInfoCard extends StatefulWidget {
+  final ColorModel colorModel;
+  final bool isAlreadySaved;
+  final VoidCallback onLock;
+  final VoidCallback onSave;
+  final VoidCallback onCopyHex;
+
+  const _AnimatedColorInfoCard({
+    required this.colorModel,
+    required this.isAlreadySaved,
+    required this.onLock,
+    required this.onSave,
+    required this.onCopyHex,
+  });
+
+  @override
+  State<_AnimatedColorInfoCard> createState() => _AnimatedColorInfoCardState();
+}
+
+class _AnimatedColorInfoCardState extends State<_AnimatedColorInfoCard>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<Offset> _slideAnimation;
+  late final Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 1),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+    _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      bottom: MediaQuery.of(context).viewPadding.bottom + 24,
+      left: 20,
+      right: 20,
+      child: SlideTransition(
+        position: _slideAnimation,
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: ColorInfoCard(
+            colorModel: widget.colorModel,
+            isAlreadySaved: widget.isAlreadySaved,
+            onLock: widget.onLock,
+            onSave: widget.onSave,
+            onCopyHex: widget.onCopyHex,
+          ),
+        ),
       ),
     );
   }
@@ -122,6 +189,7 @@ class HomeScreen extends ConsumerWidget {
 /// with lock, save, and copy controls.
 class ColorInfoCard extends StatelessWidget {
   final ColorModel colorModel;
+  final bool isAlreadySaved;
   final VoidCallback onLock;
   final VoidCallback onSave;
   final VoidCallback onCopyHex;
@@ -129,6 +197,7 @@ class ColorInfoCard extends StatelessWidget {
   const ColorInfoCard({
     super.key,
     required this.colorModel,
+    required this.isAlreadySaved,
     required this.onLock,
     required this.onSave,
     required this.onCopyHex,
@@ -137,109 +206,178 @@ class ColorInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final overlay = theme.extension<PointHueOverlayTheme>()!;
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: theme.cardColor.withValues(alpha: 0.9),
+    return Card(
+      elevation: 4,
+      color: overlay.overlayCardBackground,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: 10,
-            spreadRadius: 2,
-          ),
-        ],
+        side: BorderSide(color: overlay.overlayCardBorder, width: 0.5),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: colorModel.toColor(),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: theme.dividerColor),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      colorModel.name,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                // Color swatch with semantics.
+                Semantics(
+                  label:
+                      'Detected color: '
+                      '${colorModel.name}, '
+                      '${colorModel.hex}',
+                  child: Hero(
+                    tag: 'color-${colorModel.hex}',
+                    child: Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: colorModel.toColor(),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: theme.dividerColor),
                       ),
                     ),
-                    GestureDetector(
-                      onTap: onCopyHex,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Color name + lock badge.
+                      Row(
                         children: [
-                          Text(
-                            colorModel.hex,
-                            style: theme.textTheme.bodySmall,
+                          Flexible(
+                            child: Text(
+                              colorModel.name,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
-                          const SizedBox(width: 4),
-                          Icon(
-                            Icons.copy,
-                            size: 14,
-                            color: theme.textTheme.bodySmall?.color,
-                          ),
+                          if (colorModel.isLocked) ...[
+                            const SizedBox(width: 6),
+                            _LockedBadge(overlay: overlay, theme: theme),
+                          ],
                         ],
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                transitionBuilder: (child, animation) {
-                  return ScaleTransition(scale: animation, child: child);
-                },
-                child: IconButton(
-                  key: ValueKey(colorModel.isLocked),
-                  icon: Icon(
-                    colorModel.isLocked ? Icons.lock : Icons.lock_open,
-                    color: colorModel.isLocked
-                        ? theme.colorScheme.primary
-                        : null,
+                      // Hex value — tappable to copy.
+                      Semantics(
+                        button: true,
+                        label:
+                            'Copy hex code '
+                            '${colorModel.hex}',
+                        child: InkWell(
+                          onTap: onCopyHex,
+                          borderRadius: BorderRadius.circular(4),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 2),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  colorModel.hex,
+                                  style: theme.textTheme.bodySmall,
+                                ),
+                                const SizedBox(width: 4),
+                                Icon(
+                                  Icons.copy,
+                                  size: 14,
+                                  color: theme.textTheme.bodySmall?.color,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  onPressed: onLock,
                 ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.save_outlined),
-                onPressed: onSave,
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _RgbInfoItem(label: 'R', value: colorModel.r.toString()),
-              _RgbInfoItem(label: 'G', value: colorModel.g.toString()),
-              _RgbInfoItem(label: 'B', value: colorModel.b.toString()),
-            ],
-          ),
-        ],
+                // Lock toggle.
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  transitionBuilder: (child, animation) {
+                    return ScaleTransition(scale: animation, child: child);
+                  },
+                  child: IconButton(
+                    key: ValueKey(colorModel.isLocked),
+                    icon: Icon(
+                      colorModel.isLocked ? Icons.lock : Icons.lock_open,
+                      color: colorModel.isLocked
+                          ? theme.colorScheme.primary
+                          : null,
+                    ),
+                    tooltip: colorModel.isLocked
+                        ? 'Unlock color detection'
+                        : 'Lock current color',
+                    onPressed: onLock,
+                  ),
+                ),
+                // Save button with state feedback.
+                IconButton(
+                  icon: Icon(
+                    isAlreadySaved ? Icons.bookmark : Icons.bookmark_outline,
+                  ),
+                  tooltip: isAlreadySaved ? 'Already saved' : 'Save to library',
+                  onPressed: onSave,
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            // Animated RGB values.
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _AnimatedRgbItem(label: 'R', value: colorModel.r),
+                _AnimatedRgbItem(label: 'G', value: colorModel.g),
+                _AnimatedRgbItem(label: 'B', value: colorModel.b),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-/// Displays a single R/G/B channel label and value.
-class _RgbInfoItem extends StatelessWidget {
-  final String label;
-  final String value;
+/// Small pill badge indicating the color is locked.
+class _LockedBadge extends StatelessWidget {
+  final PointHueOverlayTheme overlay;
+  final ThemeData theme;
 
-  const _RgbInfoItem({required this.label, required this.value});
+  const _LockedBadge({required this.overlay, required this.theme});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: overlay.lockedBadge,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(
+        'LOCKED',
+        style: theme.textTheme.labelSmall?.copyWith(
+          fontSize: 9,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 0.5,
+          color: theme.colorScheme.primary,
+        ),
+      ),
+    );
+  }
+}
+
+/// Displays a single R/G/B channel with an animated
+/// counter transition.
+class _AnimatedRgbItem extends StatelessWidget {
+  final String label;
+  final int value;
+
+  const _AnimatedRgbItem({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -252,7 +390,16 @@ class _RgbInfoItem extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        Text(value, style: theme.textTheme.bodyLarge),
+        TweenAnimationBuilder<int>(
+          tween: IntTween(begin: value, end: value),
+          duration: const Duration(milliseconds: 300),
+          builder: (context, animatedValue, child) {
+            return Text(
+              animatedValue.toString(),
+              style: theme.textTheme.bodyLarge,
+            );
+          },
+        ),
       ],
     );
   }
