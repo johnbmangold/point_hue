@@ -21,6 +21,7 @@ dependencies:
   wakelock_plus: ^1.4.0
   json_annotation: ^4.11.0
 
+  material_ui: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

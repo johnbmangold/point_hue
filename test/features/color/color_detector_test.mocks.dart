@@ -4,7 +4,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i6;
-import 'dart:typed_data' as _i9;
 import 'dart:ui' as _i7;
 
 import 'package:camera/camera.dart' as _i3;
@@ -58,11 +57,6 @@ class _FakeWidget_4 extends _i1.SmartFake implements _i4.Widget {
   @override
   String toString({_i5.DiagnosticLevel? minLevel = _i5.DiagnosticLevel.info}) =>
       super.toString();
-}
-
-class _FakeImageFormat_5 extends _i1.SmartFake implements _i3.ImageFormat {
-  _FakeImageFormat_5(Object parent, Invocation parentInvocation)
-    : super(parent, parentInvocation);
 }
 
 /// A class which mocks [CameraController].
@@ -447,76 +441,4 @@ class MockCameraController extends _i1.Mock implements _i3.CameraController {
     Invocation.method(#notifyListeners, []),
     returnValueForMissingStub: null,
   );
-}
-
-/// A class which mocks [CameraImage].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockCameraImage extends _i1.Mock implements _i3.CameraImage {
-  MockCameraImage() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  _i3.ImageFormat get format =>
-      (super.noSuchMethod(
-            Invocation.getter(#format),
-            returnValue: _FakeImageFormat_5(this, Invocation.getter(#format)),
-          )
-          as _i3.ImageFormat);
-
-  @override
-  int get height =>
-      (super.noSuchMethod(Invocation.getter(#height), returnValue: 0) as int);
-
-  @override
-  int get width =>
-      (super.noSuchMethod(Invocation.getter(#width), returnValue: 0) as int);
-
-  @override
-  List<_i3.Plane> get planes =>
-      (super.noSuchMethod(
-            Invocation.getter(#planes),
-            returnValue: <_i3.Plane>[],
-          )
-          as List<_i3.Plane>);
-}
-
-/// A class which mocks [Plane].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockPlane extends _i1.Mock implements _i3.Plane {
-  MockPlane() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  _i9.Uint8List get bytes =>
-      (super.noSuchMethod(
-            Invocation.getter(#bytes),
-            returnValue: _i9.Uint8List(0),
-          )
-          as _i9.Uint8List);
-
-  @override
-  int get bytesPerRow =>
-      (super.noSuchMethod(Invocation.getter(#bytesPerRow), returnValue: 0)
-          as int);
-}
-
-/// A class which mocks [ImageFormat].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockImageFormat extends _i1.Mock implements _i3.ImageFormat {
-  MockImageFormat() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  _i2.ImageFormatGroup get group =>
-      (super.noSuchMethod(
-            Invocation.getter(#group),
-            returnValue: _i2.ImageFormatGroup.unknown,
-          )
-          as _i2.ImageFormatGroup);
 }

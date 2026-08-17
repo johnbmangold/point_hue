@@ -42,7 +42,7 @@ final class ColorDetectorNotifierProvider
 }
 
 String _$colorDetectorNotifierHash() =>
-    r'190c27c7b182a69079ffd2b3de80bc0b9dff6617';
+    r'30840af02ac3a1231ee7ae21ab02e4d2c3f4e1eb';
 
 abstract class _$ColorDetectorNotifier extends $Notifier<ColorModel> {
   ColorModel build();

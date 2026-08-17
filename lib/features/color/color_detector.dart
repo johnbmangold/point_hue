@@ -4,7 +4,7 @@ import 'dart:isolate';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart' show Color;
+import 'package:material_ui/material_ui.dart' show Color;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:point_hue/features/color/color_model.dart';
 import 'package:point_hue/shared/extensions/color_extensions.dart';
