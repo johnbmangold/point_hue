@@ -1,6 +1,5 @@
-import 'package:flex_color_scheme/flex_color_scheme.dart';
-import 'package:material_ui/material_ui.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Overlay theme extension for camera-overlay UI
 /// elements that need consistent tokens across
@@ -127,63 +126,30 @@ class PointHueTheme {
     lockedBadge: Color(0xFF311B92),
   );
 
-  static ThemeData light = FlexThemeData.light(
-    colors: const FlexSchemeColor(
-      primary: electricViolet,
-      primaryContainer: Color(0xFFD0E4FF),
-      secondary: vibrantCyan,
-      secondaryContainer: Color(0xFFFFDBAF),
-      tertiary: Color(0xFF006875),
-      tertiaryContainer: Color(0xFF95F0FF),
-      appBarColor: galleryWhite,
-      error: Color(0xFFB00020),
-    ),
-    surface: galleryWhite,
-    scaffoldBackground: galleryWhite,
-    usedColors: 2,
-    surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
-    blendLevel: 7,
-    subThemesData: const FlexSubThemesData(
-      blendOnLevel: 10,
-      blendOnColors: false,
-      useMaterial3Typography: true,
-      useM2StyleDividerInM3: true,
-      alignedDropdown: true,
-      useInputDecoratorThemeInDialogs: true,
-      cardElevation: 2,
-    ),
-    visualDensity: FlexColorScheme.comfortablePlatformDensity,
+  static final ThemeData light = ThemeData(
     useMaterial3: true,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: electricViolet,
+      primary: electricViolet,
+      secondary: vibrantCyan,
+      surface: galleryWhite,
+      brightness: Brightness.light,
+    ),
+    scaffoldBackgroundColor: galleryWhite,
     fontFamily: GoogleFonts.outfit().fontFamily,
     extensions: const <ThemeExtension<dynamic>>[_lightOverlay],
   );
 
-  static ThemeData dark = FlexThemeData.dark(
-    colors: const FlexSchemeColor(
-      primary: vibrantCyan,
-      primaryContainer: Color(0xFF00325B),
-      secondary: electricViolet,
-      secondaryContainer: Color(0xFF872100),
-      tertiary: Color(0xFF86D2E1),
-      tertiaryContainer: Color(0xFF004E59),
-      appBarColor: darkCharcoal,
-      error: Color(0xFFCF6679),
-    ),
-    surface: darkCharcoal,
-    scaffoldBackground: darkCharcoal,
-    usedColors: 2,
-    surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
-    blendLevel: 13,
-    subThemesData: const FlexSubThemesData(
-      blendOnLevel: 20,
-      useMaterial3Typography: true,
-      useM2StyleDividerInM3: true,
-      alignedDropdown: true,
-      useInputDecoratorThemeInDialogs: true,
-      cardElevation: 2,
-    ),
-    visualDensity: FlexColorScheme.comfortablePlatformDensity,
+  static final ThemeData dark = ThemeData(
     useMaterial3: true,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: vibrantCyan,
+      primary: vibrantCyan,
+      secondary: electricViolet,
+      surface: darkCharcoal,
+      brightness: Brightness.dark,
+    ),
+    scaffoldBackgroundColor: darkCharcoal,
     fontFamily: GoogleFonts.outfit().fontFamily,
     extensions: const <ThemeExtension<dynamic>>[_darkOverlay],
   );
