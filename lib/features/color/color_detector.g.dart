@@ -48,7 +48,7 @@ abstract class _$ColorDetectorNotifier extends $Notifier<ColorModel> {
   ColorModel build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<ColorModel, ColorModel>;
     final element =
         ref.element
@@ -58,6 +58,6 @@ abstract class _$ColorDetectorNotifier extends $Notifier<ColorModel> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }

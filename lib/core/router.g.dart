@@ -10,11 +10,17 @@ List<RouteBase> get $appRoutes => [$homeRoute];
 
 RouteBase get $homeRoute => GoRouteData.$route(
   path: '/',
+  hasOverriddenOnExit: false,
   factory: $HomeRoute._fromState,
   routes: [
-    GoRouteData.$route(path: 'library', factory: $LibraryRoute._fromState),
+    GoRouteData.$route(
+      path: 'library',
+      hasOverriddenOnExit: false,
+      factory: $LibraryRoute._fromState,
+    ),
     GoRouteData.$route(
       path: 'details/:hex',
+      hasOverriddenOnExit: false,
       factory: $ColorDetailRoute._fromState,
     ),
   ],

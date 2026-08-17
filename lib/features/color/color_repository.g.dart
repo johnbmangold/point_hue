@@ -40,7 +40,7 @@ abstract class _$ColorLibraryNotifier extends $AsyncNotifier<List<ColorModel>> {
   FutureOr<List<ColorModel>> build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref =
         this.ref as $Ref<AsyncValue<List<ColorModel>>, List<ColorModel>>;
     final element =
@@ -51,7 +51,7 @@ abstract class _$ColorLibraryNotifier extends $AsyncNotifier<List<ColorModel>> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -86,7 +86,7 @@ abstract class _$ColorHistoryNotifier extends $AsyncNotifier<List<ColorModel>> {
   FutureOr<List<ColorModel>> build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref =
         this.ref as $Ref<AsyncValue<List<ColorModel>>, List<ColorModel>>;
     final element =
@@ -97,6 +97,6 @@ abstract class _$ColorHistoryNotifier extends $AsyncNotifier<List<ColorModel>> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
