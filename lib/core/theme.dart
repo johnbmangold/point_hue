@@ -15,6 +15,8 @@ class PointHueOverlayTheme extends ThemeExtension<PointHueOverlayTheme> {
     required this.overlayCardBackground,
     required this.overlayCardBorder,
     required this.lockedBadge,
+    this.hudBackground = const Color(0x66000000),
+    this.accentGlow = const Color(0x668F00FF),
   });
 
   /// Color for icons rendered on top of the camera
@@ -45,6 +47,12 @@ class PointHueOverlayTheme extends ThemeExtension<PointHueOverlayTheme> {
   /// Badge background when a color is locked.
   final Color lockedBadge;
 
+  /// Background tint for floating frosted glass HUD bars.
+  final Color hudBackground;
+
+  /// Accent glow color for interactive highlights.
+  final Color accentGlow;
+
   @override
   ThemeExtension<PointHueOverlayTheme> copyWith({
     Color? overlayIcon,
@@ -55,6 +63,8 @@ class PointHueOverlayTheme extends ThemeExtension<PointHueOverlayTheme> {
     Color? overlayCardBackground,
     Color? overlayCardBorder,
     Color? lockedBadge,
+    Color? hudBackground,
+    Color? accentGlow,
   }) {
     return PointHueOverlayTheme(
       overlayIcon: overlayIcon ?? this.overlayIcon,
@@ -66,6 +76,8 @@ class PointHueOverlayTheme extends ThemeExtension<PointHueOverlayTheme> {
           overlayCardBackground ?? this.overlayCardBackground,
       overlayCardBorder: overlayCardBorder ?? this.overlayCardBorder,
       lockedBadge: lockedBadge ?? this.lockedBadge,
+      hudBackground: hudBackground ?? this.hudBackground,
+      accentGlow: accentGlow ?? this.accentGlow,
     );
   }
 
@@ -92,6 +104,8 @@ class PointHueOverlayTheme extends ThemeExtension<PointHueOverlayTheme> {
         t,
       )!,
       lockedBadge: Color.lerp(lockedBadge, other.lockedBadge, t)!,
+      hudBackground: Color.lerp(hudBackground, other.hudBackground, t)!,
+      accentGlow: Color.lerp(accentGlow, other.accentGlow, t)!,
     );
   }
 }
@@ -99,8 +113,10 @@ class PointHueOverlayTheme extends ThemeExtension<PointHueOverlayTheme> {
 /// Centralized theme definitions for PointHue.
 class PointHueTheme {
   // Brand Colors
-  static const Color darkCharcoal = Color(0xFF121212);
-  static const Color galleryWhite = Color(0xFFF5F5F5);
+  static const Color darkCharcoal = Color(0xFF101216);
+  static const Color surfaceDark = Color(0xFF181B20);
+  static const Color galleryWhite = Color(0xFFF7F8FA);
+  static const Color surfaceLight = Color(0xFFFFFFFF);
   static const Color electricViolet = Color(0xFF8F00FF);
   static const Color vibrantCyan = Color(0xFF00E5FF);
 
@@ -109,10 +125,12 @@ class PointHueTheme {
     overlayText: Colors.white,
     reticle: Colors.white,
     activeIndicator: Color(0xFFFDD835),
-    successColor: Color(0xFF43A047),
-    overlayCardBackground: Color(0xE6FFFFFF),
+    successColor: Color(0xFF2E7D32),
+    overlayCardBackground: Color(0xCCFFFFFF),
     overlayCardBorder: Color(0x33000000),
     lockedBadge: Color(0xFFE8EAF6),
+    hudBackground: Color(0x55000000),
+    accentGlow: Color(0x448F00FF),
   );
 
   static const _darkOverlay = PointHueOverlayTheme(
@@ -120,10 +138,12 @@ class PointHueTheme {
     overlayText: Colors.white,
     reticle: Colors.white,
     activeIndicator: Color(0xFFFDD835),
-    successColor: Color(0xFF66BB6A),
-    overlayCardBackground: Color(0xE61E1E1E),
-    overlayCardBorder: Color(0x33FFFFFF),
+    successColor: Color(0xFF4CAF50),
+    overlayCardBackground: Color(0xCC1A1D24),
+    overlayCardBorder: Color(0x22FFFFFF),
     lockedBadge: Color(0xFF311B92),
+    hudBackground: Color(0x66000000),
+    accentGlow: Color(0x4400E5FF),
   );
 
   static final ThemeData light = ThemeData(
@@ -132,11 +152,39 @@ class PointHueTheme {
       seedColor: electricViolet,
       primary: electricViolet,
       secondary: vibrantCyan,
-      surface: galleryWhite,
+      surface: surfaceLight,
       brightness: Brightness.light,
     ),
     scaffoldBackgroundColor: galleryWhite,
     fontFamily: GoogleFonts.outfit().fontFamily,
+    appBarTheme: const AppBarTheme(
+      centerTitle: true,
+      elevation: 0,
+      scrolledUnderElevation: 1,
+    ),
+    cardTheme: CardThemeData(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: const BorderSide(color: Color(0x15000000), width: 1),
+      ),
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: Colors.black.withValues(alpha: 0.04),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: electricViolet, width: 1.5),
+      ),
+    ),
     extensions: const <ThemeExtension<dynamic>>[_lightOverlay],
   );
 
@@ -146,11 +194,39 @@ class PointHueTheme {
       seedColor: vibrantCyan,
       primary: vibrantCyan,
       secondary: electricViolet,
-      surface: darkCharcoal,
+      surface: surfaceDark,
       brightness: Brightness.dark,
     ),
     scaffoldBackgroundColor: darkCharcoal,
     fontFamily: GoogleFonts.outfit().fontFamily,
+    appBarTheme: const AppBarTheme(
+      centerTitle: true,
+      elevation: 0,
+      scrolledUnderElevation: 1,
+    ),
+    cardTheme: CardThemeData(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: const BorderSide(color: Color(0x22FFFFFF), width: 1),
+      ),
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: Colors.white.withValues(alpha: 0.06),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: vibrantCyan, width: 1.5),
+      ),
+    ),
     extensions: const <ThemeExtension<dynamic>>[_darkOverlay],
   );
 }

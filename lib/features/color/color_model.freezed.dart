@@ -29,16 +29,21 @@ $ColorModelCopyWith<ColorModel> get copyWith => _$ColorModelCopyWithImpl<ColorMo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ColorModel&&(identical(other.hex, hex) || other.hex == hex)&&(identical(other.r, r) || other.r == r)&&(identical(other.g, g) || other.g == g)&&(identical(other.b, b) || other.b == b)&&(identical(other.name, name) || other.name == name)&&(identical(other.isLocked, isLocked) || other.isLocked == isLocked)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp));
+  final _this = this as ColorModel;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ColorModel&&(identical(other.hex, _this.hex) || other.hex == _this.hex)&&(identical(other.r, _this.r) || other.r == _this.r)&&(identical(other.g, _this.g) || other.g == _this.g)&&(identical(other.b, _this.b) || other.b == _this.b)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.isLocked, _this.isLocked) || other.isLocked == _this.isLocked)&&(identical(other.timestamp, _this.timestamp) || other.timestamp == _this.timestamp));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,hex,r,g,b,name,isLocked,timestamp);
+int get hashCode {
+  final _this = this as ColorModel;
+  return Object.hash(runtimeType,_this.hex,_this.r,_this.g,_this.b,_this.name,_this.isLocked,_this.timestamp);
+}
 
 @override
 String toString() {
-  return 'ColorModel(hex: $hex, r: $r, g: $g, b: $b, name: $name, isLocked: $isLocked, timestamp: $timestamp)';
+  final _this = this as ColorModel;
+  return 'ColorModel(hex: ${_this.hex}, r: ${_this.r}, g: ${_this.g}, b: ${_this.b}, name: ${_this.name}, isLocked: ${_this.isLocked}, timestamp: ${_this.timestamp})';
 }
 
 
@@ -240,16 +245,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ColorModel&&(identical(other.hex, hex) || other.hex == hex)&&(identical(other.r, r) || other.r == r)&&(identical(other.g, g) || other.g == g)&&(identical(other.b, b) || other.b == b)&&(identical(other.name, name) || other.name == name)&&(identical(other.isLocked, isLocked) || other.isLocked == isLocked)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ColorModel&&(identical(other.hex, hex) || other.hex == hex)&&(identical(other.r, r) || other.r == r)&&(identical(other.g, g) || other.g == g)&&(identical(other.b, b) || other.b == b)&&(identical(other.name, name) || other.name == name)&&(identical(other.isLocked, isLocked) || other.isLocked == isLocked)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,hex,r,g,b,name,isLocked,timestamp);
+int get hashCode {
+    return Object.hash(runtimeType,hex,r,g,b,name,isLocked,timestamp);
+}
 
 @override
 String toString() {
-  return 'ColorModel(hex: $hex, r: $r, g: $g, b: $b, name: $name, isLocked: $isLocked, timestamp: $timestamp)';
+    return 'ColorModel(hex: $hex, r: $r, g: $g, b: $b, name: $name, isLocked: $isLocked, timestamp: $timestamp)';
 }
 
 

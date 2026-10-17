@@ -204,7 +204,7 @@ class _PermissionDeniedView extends StatelessWidget {
 }
 
 /// Semi-transparent floating action button for camera
-/// controls with themed colors.
+/// controls with themed colors and glassmorphic styling.
 class _CameraActionButton extends StatelessWidget {
   final String heroTag;
   final IconData icon;
@@ -224,79 +224,129 @@ class _CameraActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FloatingActionButton(
-      heroTag: heroTag,
-      mini: true,
-      backgroundColor: isActive
-          ? overlayTheme.activeIndicator.withValues(alpha: 0.5)
-          : overlayTheme.overlayIcon.withValues(alpha: 0.3),
-      tooltip: tooltip,
-      onPressed: onPressed,
-      child: Icon(icon, color: overlayTheme.overlayIcon),
-    );
-  }
-}
-
-/// Circular bubble showing the currently detected
-/// color with semantic description.
-class ColorPreviewBubble extends ConsumerWidget {
-  const ColorPreviewBubble({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final colorModel = ref.watch(colorDetectorProvider);
-    final overlay = Theme.of(context).extension<PointHueOverlayTheme>()!;
-
-    return Semantics(
-      label:
-          'Color preview: ${colorModel.name}, '
-          '${colorModel.hex}',
-      child: Container(
-        width: 100,
-        height: 100,
-        decoration: BoxDecoration(
-          color: colorModel.toColor(),
-          shape: BoxShape.circle,
-          border: Border.all(color: overlay.overlayIcon, width: 3),
-          boxShadow: [
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        boxShadow: [
+          if (isActive)
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.5),
-              blurRadius: 10,
+              color: overlayTheme.activeIndicator.withValues(alpha: 0.5),
+              blurRadius: 12,
+              spreadRadius: 2,
+            )
+          else
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
-          ],
+        ],
+      ),
+      child: FloatingActionButton(
+        heroTag: heroTag,
+        mini: true,
+        elevation: 0,
+        highlightElevation: 2,
+        backgroundColor: isActive
+            ? overlayTheme.activeIndicator
+            : const Color(0x66000000),
+        shape: CircleBorder(
+          side: BorderSide(
+            color: isActive
+                ? Colors.white
+                : Colors.white.withValues(alpha: 0.3),
+            width: 1,
+          ),
         ),
-        child: Center(
-          child: Icon(Icons.colorize, color: overlay.overlayIcon, size: 20),
+        tooltip: tooltip,
+        onPressed: onPressed,
+        child: Icon(
+          icon,
+          color: isActive ? Colors.black87 : overlayTheme.overlayIcon,
+          size: 20,
         ),
       ),
     );
   }
 }
 
-/// Animated cross-hair reticle at the center of the
-/// screen with a gentle pulsing effect.
-class ReticleOverlay extends StatefulWidget {
+/// Circular bubble showing the currently detected
+/// color with semantic description and ambient glow.
+class ColorPreviewBubble extends ConsumerWidget {
+  const ColorPreviewBubble({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colorModel = ref.watch(colorDetectorProvider);
+    final currentColor = colorModel.toColor();
+    final isLocked = colorModel.isLocked;
+
+    return Semantics(
+      label:
+          'Color preview: ${colorModel.name}, '
+          '${colorModel.hex}',
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOutCubic,
+        width: 84,
+        height: 84,
+        decoration: BoxDecoration(
+          color: currentColor,
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: isLocked ? const Color(0xFF00E5FF) : Colors.white,
+            width: isLocked ? 3.5 : 2.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: currentColor.withValues(alpha: 0.55),
+              blurRadius: 18,
+              spreadRadius: 2,
+              offset: const Offset(0, 4),
+            ),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.4),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Center(
+          child: Icon(
+            Icons.colorize,
+            color: colorModel.contrastForeground,
+            size: 22,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Precision optical cross-hair reticle at the center of the
+/// screen with dynamic lock feedback and animated pulse.
+class ReticleOverlay extends ConsumerStatefulWidget {
   const ReticleOverlay({super.key});
 
   @override
-  State<ReticleOverlay> createState() => _ReticleOverlayState();
+  ConsumerState<ReticleOverlay> createState() => _ReticleOverlayState();
 }
 
-class _ReticleOverlayState extends State<ReticleOverlay>
+class _ReticleOverlayState extends ConsumerState<ReticleOverlay>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
-  late final Animation<double> _scaleAnimation;
+  late final Animation<double> _pulseAnimation;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(milliseconds: 1800),
     )..repeat(reverse: true);
-    _scaleAnimation = Tween<double>(
-      begin: 0.92,
-      end: 1.08,
+    _pulseAnimation = Tween<double>(
+      begin: 0.94,
+      end: 1.06,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
@@ -308,33 +358,160 @@ class _ReticleOverlayState extends State<ReticleOverlay>
 
   @override
   Widget build(BuildContext context) {
+    final colorModel = ref.watch(colorDetectorProvider);
     final overlay = Theme.of(context).extension<PointHueOverlayTheme>()!;
+    final isLocked = colorModel.isLocked;
+    final sampledColor = colorModel.toColor();
 
     return Center(
       child: Semantics(
-        label: 'Color detection reticle',
-        child: ScaleTransition(
-          scale: _scaleAnimation,
-          child: Container(
-            width: 30,
-            height: 30,
-            decoration: BoxDecoration(
-              border: Border.all(color: overlay.reticle, width: 2),
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Container(
-                width: 4,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: overlay.reticle,
-                  shape: BoxShape.circle,
+        label: isLocked ? 'Color locked at reticle' : 'Color detection reticle',
+        child: AnimatedBuilder(
+          animation: _pulseAnimation,
+          builder: (context, child) {
+            final scale = isLocked ? 1.0 : _pulseAnimation.value;
+            return Transform.scale(
+              scale: scale,
+              child: SizedBox(
+                width: 64,
+                height: 64,
+                child: CustomPaint(
+                  painter: _ReticlePainter(
+                    reticleColor: isLocked
+                        ? (overlay.activeIndicator)
+                        : overlay.reticle,
+                    centerColor: sampledColor,
+                    isLocked: isLocked,
+                  ),
                 ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );
+  }
+}
+
+class _ReticlePainter extends CustomPainter {
+  final Color reticleColor;
+  final Color centerColor;
+  final bool isLocked;
+
+  _ReticlePainter({
+    required this.reticleColor,
+    required this.centerColor,
+    required this.isLocked,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final double radius = size.width / 2;
+
+    // Outer corner target brackets
+    final bracketPaint = Paint()
+      ..color = reticleColor.withValues(alpha: isLocked ? 0.9 : 0.6)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0
+      ..strokeCap = StrokeCap.round;
+
+    const cornerLength = 8.0;
+    // Top-left
+    canvas.drawLine(
+      const Offset(4, 4),
+      const Offset(4 + cornerLength, 4),
+      bracketPaint,
+    );
+    canvas.drawLine(
+      const Offset(4, 4),
+      const Offset(4, 4 + cornerLength),
+      bracketPaint,
+    );
+    // Top-right
+    canvas.drawLine(
+      Offset(size.width - 4, 4),
+      Offset(size.width - 4 - cornerLength, 4),
+      bracketPaint,
+    );
+    canvas.drawLine(
+      Offset(size.width - 4, 4),
+      Offset(size.width - 4, 4 + cornerLength),
+      bracketPaint,
+    );
+    // Bottom-left
+    canvas.drawLine(
+      Offset(4, size.height - 4),
+      Offset(4 + cornerLength, size.height - 4),
+      bracketPaint,
+    );
+    canvas.drawLine(
+      Offset(4, size.height - 4),
+      Offset(4, size.height - 4 - cornerLength),
+      bracketPaint,
+    );
+    // Bottom-right
+    canvas.drawLine(
+      Offset(size.width - 4, size.height - 4),
+      Offset(size.width - 4 - cornerLength, size.height - 4),
+      bracketPaint,
+    );
+    canvas.drawLine(
+      Offset(size.width - 4, size.height - 4),
+      Offset(size.width - 4, size.height - 4 - cornerLength),
+      bracketPaint,
+    );
+
+    // Inner targeting circle
+    final circlePaint = Paint()
+      ..color = reticleColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = isLocked ? 2.5 : 1.5;
+    canvas.drawCircle(center, radius - 14, circlePaint);
+
+    // Crosshairs
+    final crossPaint = Paint()
+      ..color = reticleColor.withValues(alpha: 0.8)
+      ..strokeWidth = 1.0;
+    const tick = 4.0;
+    canvas.drawLine(
+      Offset(center.dx, center.dy - radius + 14),
+      Offset(center.dx, center.dy - radius + 14 + tick),
+      crossPaint,
+    );
+    canvas.drawLine(
+      Offset(center.dx, center.dy + radius - 14),
+      Offset(center.dx, center.dy + radius - 14 - tick),
+      crossPaint,
+    );
+    canvas.drawLine(
+      Offset(center.dx - radius + 14, center.dy),
+      Offset(center.dx - radius + 14 + tick, center.dy),
+      crossPaint,
+    );
+    canvas.drawLine(
+      Offset(center.dx + radius - 14, center.dy),
+      Offset(center.dx + radius - 14 - tick, center.dy),
+      crossPaint,
+    );
+
+    // Center focal point colored with live sample
+    final centerFill = Paint()
+      ..color = centerColor
+      ..style = PaintingStyle.fill;
+    final centerStroke = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.0;
+
+    canvas.drawCircle(center, 4.0, centerFill);
+    canvas.drawCircle(center, 4.0, centerStroke);
+  }
+
+  @override
+  bool shouldRepaint(covariant _ReticlePainter oldDelegate) {
+    return oldDelegate.reticleColor != reticleColor ||
+        oldDelegate.centerColor != centerColor ||
+        oldDelegate.isLocked != isLocked;
   }
 }

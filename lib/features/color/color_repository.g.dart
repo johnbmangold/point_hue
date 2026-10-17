@@ -80,7 +80,7 @@ final class ColorHistoryNotifierProvider
 }
 
 String _$colorHistoryNotifierHash() =>
-    r'8f333ec391522384ad8e9cbf85790eabacd2855e';
+    r'3f045065b5c3b1ff3db6b9bbed30762b9cbd446d';
 
 abstract class _$ColorHistoryNotifier extends $AsyncNotifier<List<ColorModel>> {
   FutureOr<List<ColorModel>> build();

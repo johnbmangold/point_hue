@@ -1,3 +1,5 @@
+import 'dart:ui' show ImageFilter;
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,40 +27,95 @@ class HomeScreen extends ConsumerWidget {
     final historyNotifier = ref.read(colorHistoryProvider.notifier);
     final savedColors = ref.watch(colorLibraryProvider).value ?? [];
     final isAlreadySaved = savedColors.any((c) => c.hex == colorModel.hex);
+    final overlay = Theme.of(context).extension<PointHueOverlayTheme>()!;
 
     return Scaffold(
       body: Stack(
         children: [
           const CameraView(),
 
-          // Header — uses SafeArea-aware positioning.
+          // Glassmorphic Top HUD bar
           Positioned(
             top: MediaQuery.of(context).padding.top + 8,
-            left: 20,
-            right: 20,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  icon: const Icon(
-                    Icons.collections_bookmark,
-                    color: Colors.white,
-                    shadows: [Shadow(blurRadius: 4)],
+            left: 16,
+            right: 16,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
                   ),
-                  tooltip: 'Color library',
-                  onPressed: () => const LibraryRoute().go(context),
-                ),
-                Text(
-                  'PointHue',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    shadows: [const Shadow(blurRadius: 4)],
+                  decoration: BoxDecoration(
+                    color: overlay.hudBackground,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.15),
+                      width: 1,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.25),
+                        blurRadius: 16,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        icon: Badge(
+                          isLabelVisible: savedColors.isNotEmpty,
+                          label: Text('${savedColors.length}'),
+                          child: const Icon(
+                            Icons.collections_bookmark,
+                            color: Colors.white,
+                          ),
+                        ),
+                        tooltip: 'Color library',
+                        onPressed: () => const LibraryRoute().go(context),
+                      ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 250),
+                            width: 10,
+                            height: 10,
+                            decoration: BoxDecoration(
+                              color: colorModel.toColor(),
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: colorModel.toColor().withValues(
+                                    alpha: 0.8,
+                                  ),
+                                  blurRadius: 8,
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'PointHue',
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 0.5,
+                                ),
+                          ),
+                        ],
+                      ),
+                      // Balance the row layout.
+                      const SizedBox(width: 48),
+                    ],
                   ),
                 ),
-                // Balance the row layout.
-                const SizedBox(width: 48),
-              ],
+              ),
             ),
           ),
 
@@ -165,9 +222,9 @@ class _AnimatedColorInfoCardState extends State<_AnimatedColorInfoCard>
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      bottom: MediaQuery.of(context).viewPadding.bottom + 24,
-      left: 20,
-      right: 20,
+      bottom: MediaQuery.of(context).viewPadding.bottom + 20,
+      left: 16,
+      right: 16,
       child: SlideTransition(
         position: _slideAnimation,
         child: FadeTransition(
@@ -186,7 +243,7 @@ class _AnimatedColorInfoCardState extends State<_AnimatedColorInfoCard>
 }
 
 /// Card that displays the currently detected color
-/// with lock, save, and copy controls.
+/// with glassmorphic depth, dynamic ambient glow, and streamlined actions.
 class ColorInfoCard extends StatelessWidget {
   final ColorModel colorModel;
   final bool isAlreadySaved;
@@ -207,136 +264,255 @@ class ColorInfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final overlay = theme.extension<PointHueOverlayTheme>()!;
+    final currentColor = colorModel.toColor();
+    final hexRaw = colorModel.hex.replaceAll('#', '');
 
-    return Card(
-      elevation: 4,
-      color: overlay.overlayCardBackground,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24),
-        side: BorderSide(color: overlay.overlayCardBorder, width: 0.5),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          // Dynamic ambient color backlight glow
+          BoxShadow(
+            color: currentColor.withValues(alpha: 0.35),
+            blurRadius: 30,
+            spreadRadius: -2,
+            offset: const Offset(0, 10),
+          ),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.25),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                // Color swatch with semantics.
-                Semantics(
-                  label:
-                      'Detected color: '
-                      '${colorModel.name}, '
-                      '${colorModel.hex}',
-                  child: Hero(
-                    tag: 'color-${colorModel.hex}',
-                    child: Container(
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        color: colorModel.toColor(),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: theme.dividerColor),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(28),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          child: Card(
+            elevation: 0,
+            margin: EdgeInsets.zero,
+            color: overlay.overlayCardBackground,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(28),
+              side: BorderSide(color: overlay.overlayCardBorder, width: 0.75),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
                     children: [
-                      // Color name + lock badge.
-                      Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              colorModel.name,
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          if (colorModel.isLocked) ...[
-                            const SizedBox(width: 6),
-                            _LockedBadge(overlay: overlay, theme: theme),
-                          ],
-                        ],
-                      ),
-                      // Hex value — tappable to copy.
+                      // Tappable color swatch with Hero transition to details
                       Semantics(
                         button: true,
                         label:
-                            'Copy hex code '
+                            'Inspect detected color: '
+                            '${colorModel.name}, '
                             '${colorModel.hex}',
                         child: InkWell(
-                          onTap: onCopyHex,
-                          borderRadius: BorderRadius.circular(4),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  colorModel.hex,
-                                  style: theme.textTheme.bodySmall,
+                          onTap: () =>
+                              ColorDetailRoute(hex: hexRaw).go(context),
+                          borderRadius: BorderRadius.circular(16),
+                          child: Hero(
+                            tag: 'color-${colorModel.hex}',
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 250),
+                              width: 62,
+                              height: 62,
+                              decoration: BoxDecoration(
+                                color: currentColor,
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: Colors.white.withValues(alpha: 0.3),
+                                  width: 1.5,
                                 ),
-                                const SizedBox(width: 4),
-                                Icon(
-                                  Icons.copy,
-                                  size: 14,
-                                  color: theme.textTheme.bodySmall?.color,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: currentColor.withValues(alpha: 0.45),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: Center(
+                                child: Icon(
+                                  Icons.info_outline,
+                                  size: 18,
+                                  color: colorModel.contrastForeground
+                                      .withValues(alpha: 0.7),
                                 ),
-                              ],
+                              ),
                             ),
                           ),
                         ),
                       ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Color name + lock badge.
+                            Row(
+                              children: [
+                                Flexible(
+                                  child: GestureDetector(
+                                    onTap: () => ColorDetailRoute(
+                                      hex: hexRaw,
+                                    ).go(context),
+                                    child: Text(
+                                      colorModel.name,
+                                      style: theme.textTheme.titleMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: -0.2,
+                                          ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ),
+                                if (colorModel.isLocked) ...[
+                                  const SizedBox(width: 6),
+                                  _LockedBadge(overlay: overlay, theme: theme),
+                                ],
+                              ],
+                            ),
+                            const SizedBox(height: 2),
+                            // Hex value — tappable to copy.
+                            Semantics(
+                              button: true,
+                              label:
+                                  'Copy hex code '
+                                  '${colorModel.hex}',
+                              child: InkWell(
+                                onTap: onCopyHex,
+                                borderRadius: BorderRadius.circular(6),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 2,
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        colorModel.hex,
+                                        style: theme.textTheme.bodyMedium
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.w600,
+                                              fontFamily: 'monospace',
+                                            ),
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Icon(
+                                        Icons.copy,
+                                        size: 14,
+                                        color: theme.textTheme.bodySmall?.color,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      // Inspect / Details Action
+                      IconButton(
+                        icon: const Icon(Icons.arrow_forward_ios, size: 16),
+                        tooltip: 'View color details & palette',
+                        onPressed: () =>
+                            ColorDetailRoute(hex: hexRaw).go(context),
+                      ),
+                      // Lock toggle.
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 200),
+                        transitionBuilder: (child, animation) {
+                          return ScaleTransition(
+                            scale: animation,
+                            child: child,
+                          );
+                        },
+                        child: IconButton(
+                          key: ValueKey(colorModel.isLocked),
+                          icon: Icon(
+                            colorModel.isLocked ? Icons.lock : Icons.lock_open,
+                            color: colorModel.isLocked
+                                ? theme.colorScheme.primary
+                                : null,
+                          ),
+                          tooltip: colorModel.isLocked
+                              ? 'Unlock color detection'
+                              : 'Lock current color',
+                          onPressed: onLock,
+                        ),
+                      ),
+                      // Save button with state feedback.
+                      IconButton(
+                        icon: Icon(
+                          isAlreadySaved
+                              ? Icons.bookmark
+                              : Icons.bookmark_outline,
+                          color: isAlreadySaved
+                              ? theme.colorScheme.primary
+                              : null,
+                        ),
+                        tooltip: isAlreadySaved
+                            ? 'Already saved'
+                            : 'Save to library',
+                        onPressed: onSave,
+                      ),
                     ],
                   ),
-                ),
-                // Lock toggle.
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
-                  transitionBuilder: (child, animation) {
-                    return ScaleTransition(scale: animation, child: child);
-                  },
-                  child: IconButton(
-                    key: ValueKey(colorModel.isLocked),
-                    icon: Icon(
-                      colorModel.isLocked ? Icons.lock : Icons.lock_open,
-                      color: colorModel.isLocked
-                          ? theme.colorScheme.primary
-                          : null,
+                  const SizedBox(height: 16),
+                  // Animated RGB values with visual channel level meters
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 10,
                     ),
-                    tooltip: colorModel.isLocked
-                        ? 'Unlock color detection'
-                        : 'Lock current color',
-                    onPressed: onLock,
+                    decoration: BoxDecoration(
+                      color: theme.brightness == Brightness.dark
+                          ? Colors.white.withValues(alpha: 0.04)
+                          : Colors.black.withValues(alpha: 0.03),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _AnimatedRgbItem(
+                          label: 'R',
+                          value: colorModel.r,
+                          color: const Color(0xFFEF5350),
+                        ),
+                        Container(
+                          width: 1,
+                          height: 24,
+                          color: theme.dividerColor.withValues(alpha: 0.5),
+                        ),
+                        _AnimatedRgbItem(
+                          label: 'G',
+                          value: colorModel.g,
+                          color: const Color(0xFF66BB6A),
+                        ),
+                        Container(
+                          width: 1,
+                          height: 24,
+                          color: theme.dividerColor.withValues(alpha: 0.5),
+                        ),
+                        _AnimatedRgbItem(
+                          label: 'B',
+                          value: colorModel.b,
+                          color: const Color(0xFF42A5F5),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                // Save button with state feedback.
-                IconButton(
-                  icon: Icon(
-                    isAlreadySaved ? Icons.bookmark : Icons.bookmark_outline,
-                  ),
-                  tooltip: isAlreadySaved ? 'Already saved' : 'Save to library',
-                  onPressed: onSave,
-                ),
-              ],
+                ],
+              ),
             ),
-            const SizedBox(height: 16),
-            // Animated RGB values.
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _AnimatedRgbItem(label: 'R', value: colorModel.r),
-                _AnimatedRgbItem(label: 'G', value: colorModel.g),
-                _AnimatedRgbItem(label: 'B', value: colorModel.b),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -356,7 +532,11 @@ class _LockedBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
         color: overlay.lockedBadge,
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: theme.colorScheme.primary.withValues(alpha: 0.4),
+          width: 0.5,
+        ),
       ),
       child: Text(
         'LOCKED',
@@ -372,31 +552,53 @@ class _LockedBadge extends StatelessWidget {
 }
 
 /// Displays a single R/G/B channel with an animated
-/// counter transition.
+/// counter transition and visual level indicator.
 class _AnimatedRgbItem extends StatelessWidget {
   final String label;
   final int value;
+  final Color color;
 
-  const _AnimatedRgbItem({required this.label, required this.value});
+  const _AnimatedRgbItem({
+    required this.label,
+    required this.value,
+    this.color = const Color(0xFF8F00FF),
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          label,
-          style: theme.textTheme.labelSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: theme.textTheme.labelSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.outline,
+              ),
+            ),
+          ],
         ),
+        const SizedBox(height: 2),
         TweenAnimationBuilder<int>(
           tween: IntTween(begin: value, end: value),
           duration: const Duration(milliseconds: 300),
           builder: (context, animatedValue, child) {
             return Text(
               animatedValue.toString(),
-              style: theme.textTheme.bodyLarge,
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                fontFamily: 'monospace',
+              ),
             );
           },
         ),

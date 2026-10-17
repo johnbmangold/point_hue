@@ -25,23 +25,29 @@ $CameraStateCopyWith<CameraState> get copyWith => _$CameraStateCopyWithImpl<Came
 
 @override
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  final _this = this as CameraState;
   properties
     ..add(DiagnosticsProperty('type', 'CameraState'))
-    ..add(DiagnosticsProperty('controller', controller))..add(DiagnosticsProperty('currentCameraIndex', currentCameraIndex))..add(DiagnosticsProperty('isFlashOn', isFlashOn));
+    ..add(DiagnosticsProperty('controller', _this.controller))..add(DiagnosticsProperty('currentCameraIndex', _this.currentCameraIndex))..add(DiagnosticsProperty('isFlashOn', _this.isFlashOn));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CameraState&&(identical(other.controller, controller) || other.controller == controller)&&(identical(other.currentCameraIndex, currentCameraIndex) || other.currentCameraIndex == currentCameraIndex)&&(identical(other.isFlashOn, isFlashOn) || other.isFlashOn == isFlashOn));
+  final _this = this as CameraState;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CameraState&&(identical(other.controller, _this.controller) || other.controller == _this.controller)&&(identical(other.currentCameraIndex, _this.currentCameraIndex) || other.currentCameraIndex == _this.currentCameraIndex)&&(identical(other.isFlashOn, _this.isFlashOn) || other.isFlashOn == _this.isFlashOn));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,controller,currentCameraIndex,isFlashOn);
+int get hashCode {
+  final _this = this as CameraState;
+  return Object.hash(runtimeType,_this.controller,_this.currentCameraIndex,_this.isFlashOn);
+}
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'CameraState(controller: $controller, currentCameraIndex: $currentCameraIndex, isFlashOn: $isFlashOn)';
+  final _this = this as CameraState;
+  return 'CameraState(controller: ${_this.controller}, currentCameraIndex: ${_this.currentCameraIndex}, isFlashOn: ${_this.isFlashOn})';
 }
 
 
@@ -231,23 +237,25 @@ _$CameraStateCopyWith<_CameraState> get copyWith => __$CameraStateCopyWithImpl<_
 
 @override
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-  properties
+    properties
     ..add(DiagnosticsProperty('type', 'CameraState'))
     ..add(DiagnosticsProperty('controller', controller))..add(DiagnosticsProperty('currentCameraIndex', currentCameraIndex))..add(DiagnosticsProperty('isFlashOn', isFlashOn));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CameraState&&(identical(other.controller, controller) || other.controller == controller)&&(identical(other.currentCameraIndex, currentCameraIndex) || other.currentCameraIndex == currentCameraIndex)&&(identical(other.isFlashOn, isFlashOn) || other.isFlashOn == isFlashOn));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CameraState&&(identical(other.controller, controller) || other.controller == controller)&&(identical(other.currentCameraIndex, currentCameraIndex) || other.currentCameraIndex == currentCameraIndex)&&(identical(other.isFlashOn, isFlashOn) || other.isFlashOn == isFlashOn));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,controller,currentCameraIndex,isFlashOn);
+int get hashCode {
+    return Object.hash(runtimeType,controller,currentCameraIndex,isFlashOn);
+}
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'CameraState(controller: $controller, currentCameraIndex: $currentCameraIndex, isFlashOn: $isFlashOn)';
+    return 'CameraState(controller: $controller, currentCameraIndex: $currentCameraIndex, isFlashOn: $isFlashOn)';
 }
 
 

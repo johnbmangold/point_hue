@@ -91,6 +91,31 @@ void main() {
       expect(black.distanceTo(white), closeTo(441.67, 0.1));
     });
 
+    test('cmykString returns correct format', () {
+      const red = ColorModel(hex: '#FF0000', r: 255, g: 0, b: 0, name: 'Red');
+      expect(red.cmykString, contains('CMYK('));
+      const black = ColorModel(hex: '#000000', r: 0, g: 0, b: 0, name: 'Black');
+      expect(black.cmykString, 'CMYK(0%, 0%, 0%, 100%)');
+    });
+
+    test('analogous returns 2 colors', () {
+      const red = ColorModel(hex: '#FF0000', r: 255, g: 0, b: 0, name: 'Red');
+      final analogous = red.analogous;
+      expect(analogous.length, 2);
+    });
+
+    test('triadic returns 2 colors', () {
+      const red = ColorModel(hex: '#FF0000', r: 255, g: 0, b: 0, name: 'Red');
+      final triadic = red.triadic;
+      expect(triadic.length, 2);
+    });
+
+    test('shades returns 5 tonal values', () {
+      const red = ColorModel(hex: '#FF0000', r: 255, g: 0, b: 0, name: 'Red');
+      final shades = red.shades;
+      expect(shades.length, 5);
+    });
+
     test('fromJson creates correct instance', () {
       final json = {
         'hex': '#0000FF',

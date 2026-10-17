@@ -42,17 +42,27 @@ void main() {
     expect(find.text('RGB'), findsWidgets);
     expect(find.text('HSL'), findsWidgets);
     expect(find.text('HSV'), findsOneWidget);
+    expect(find.text('CMYK'), findsOneWidget);
+
+    // Harmonies section
+    expect(find.text('Harmonies & Palette'), findsOneWidget);
+    expect(find.text('Complementary'), findsOneWidget);
+    expect(find.text('Analogous'), findsOneWidget);
+    expect(find.text('Monochromatic Shades'), findsOneWidget);
 
     // Accessibility section
     expect(find.text('Accessibility (WCAG 2.1)'), findsOneWidget);
     expect(find.text('White Text'), findsOneWidget);
     expect(find.text('Black Text'), findsOneWidget);
+    expect(find.text('White text sample on background'), findsOneWidget);
 
     // Export section
     expect(find.text('Export'), findsOneWidget);
     expect(find.text('Copy CSS'), findsOneWidget);
     expect(find.text('Copy Swift'), findsOneWidget);
     expect(find.text('Copy Flutter'), findsOneWidget);
+    expect(find.text('Copy Compose'), findsOneWidget);
+    expect(find.text('Copy Tailwind'), findsOneWidget);
   });
 
   testWidgets('contrast badges show correct pass/fail', (tester) async {

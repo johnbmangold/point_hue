@@ -3,6 +3,7 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+
 import 'dart:async' as _i6;
 import 'dart:ui' as _i7;
 
@@ -403,6 +404,15 @@ class MockCameraController extends _i1.Mock implements _i2.CameraController {
   _i6.Future<void> setFocusPoint(_i7.Offset? point) =>
       (super.noSuchMethod(
             Invocation.method(#setFocusPoint, [point]),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> setJpegImageQuality(int? quality) =>
+      (super.noSuchMethod(
+            Invocation.method(#setJpegImageQuality, [quality]),
             returnValue: _i6.Future<void>.value(),
             returnValueForMissingStub: _i6.Future<void>.value(),
           )

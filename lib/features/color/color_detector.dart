@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:developer' as developer;
-import 'dart:isolate';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
@@ -101,14 +100,14 @@ class ColorDetectorNotifier extends _$ColorDetectorNotifier {
 
     final now = DateTime.now();
     final elapsed = now.difference(_lastProcessTime).inMilliseconds;
-    if (elapsed < 500) return;
+    if (elapsed < 300) return;
     _lastProcessTime = now;
 
     try {
-      // Copy plane data so we can send to an isolate.
+      // Direct plane referencing to avoid multi-megabyte heap allocation.
       final planes = image.planes.map((p) {
         return PlaneData(
-          bytes: Uint8List.fromList(p.bytes),
+          bytes: p.bytes,
           bytesPerRow: p.bytesPerRow,
           bytesPerPixel: p.bytesPerPixel,
         );
@@ -121,7 +120,8 @@ class ColorDetectorNotifier extends _$ColorDetectorNotifier {
         planes: planes,
       );
 
-      final result = await Isolate.run(() => extractColor(params));
+      // Fast synchronous evaluation of center 400 pixels (<0.05ms)
+      final result = extractColor(params);
 
       if (result == null) return;
 

@@ -68,5 +68,17 @@ void main() {
       expect(result.name, isNotEmpty);
       expect(result.color, isNotNull);
     });
+
+    test('search returns matching colors by query', () {
+      final results = ColorNames.search('violet');
+      expect(results, isNotEmpty);
+      expect(
+        results.any((c) => c.name.toLowerCase().contains('violet')),
+        isTrue,
+      );
+
+      final all = ColorNames.search('');
+      expect(all.length, greaterThan(700));
+    });
   });
 }

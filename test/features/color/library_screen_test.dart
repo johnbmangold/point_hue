@@ -33,6 +33,36 @@ void main() {
     expect(find.text('#FF0000'), findsOneWidget);
   });
 
+  testWidgets('LibraryScreen toggles between list and grid views', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          colorLibraryProvider.overrideWith(() => FakeLibraryNotifier()),
+          colorHistoryProvider.overrideWith(() => FakeHistoryNotifier()),
+        ],
+        child: MaterialApp(
+          theme: PointHueTheme.light,
+          home: const LibraryScreen(),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    // Default is list view, so grid icon is shown
+    expect(find.byIcon(Icons.grid_view), findsOneWidget);
+
+    // Tap to switch to grid view
+    await tester.tap(find.byIcon(Icons.grid_view));
+    await tester.pumpAndSettle();
+
+    // Now in grid view, list icon is shown
+    expect(find.byIcon(Icons.view_list), findsOneWidget);
+    expect(find.text('Test Red'), findsOneWidget);
+  });
+
   testWidgets('LibraryScreen shows empty state', (tester) async {
     await tester.pumpWidget(
       ProviderScope(

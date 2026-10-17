@@ -58,10 +58,57 @@ abstract class ColorModel with _$ColorModel {
   /// Returns the HSL lightness (0.0–1.0).
   double get lightness => HSLColor.fromColor(toColor()).lightness;
 
+  /// Converts to CMYK and returns a formatted string.
+  String get cmykString {
+    final rNorm = r / 255.0;
+    final gNorm = g / 255.0;
+    final bNorm = b / 255.0;
+    final k = 1.0 - math.max(rNorm, math.max(gNorm, bNorm));
+    if (k >= 1.0) return 'CMYK(0%, 0%, 0%, 100%)';
+    final c = (1.0 - rNorm - k) / (1.0 - k);
+    final m = (1.0 - gNorm - k) / (1.0 - k);
+    final y = (1.0 - bNorm - k) / (1.0 - k);
+    return 'CMYK('
+        '${(c * 100).round()}%, '
+        '${(m * 100).round()}%, '
+        '${(y * 100).round()}%, '
+        '${(k * 100).round()}%)';
+  }
+
   /// Generates a complementary color.
   Color get complementary {
     final hsl = HSLColor.fromColor(toColor());
     return hsl.withHue((hsl.hue + 180) % 360).toColor();
+  }
+
+  /// Generates two analogous colors (-30° and +30°).
+  List<Color> get analogous {
+    final hsl = HSLColor.fromColor(toColor());
+    return [
+      hsl.withHue((hsl.hue - 30 + 360) % 360).toColor(),
+      hsl.withHue((hsl.hue + 30) % 360).toColor(),
+    ];
+  }
+
+  /// Generates two triadic colors (+120° and +240°).
+  List<Color> get triadic {
+    final hsl = HSLColor.fromColor(toColor());
+    return [
+      hsl.withHue((hsl.hue + 120) % 360).toColor(),
+      hsl.withHue((hsl.hue + 240) % 360).toColor(),
+    ];
+  }
+
+  /// Generates lighter and darker monochromatic shades.
+  List<Color> get shades {
+    final hsl = HSLColor.fromColor(toColor());
+    return [
+      hsl.withLightness((hsl.lightness - 0.25).clamp(0.05, 0.95)).toColor(),
+      hsl.withLightness((hsl.lightness - 0.12).clamp(0.05, 0.95)).toColor(),
+      toColor(),
+      hsl.withLightness((hsl.lightness + 0.12).clamp(0.05, 0.95)).toColor(),
+      hsl.withLightness((hsl.lightness + 0.25).clamp(0.05, 0.95)).toColor(),
+    ];
   }
 
   /// Estimated luminance — useful for choosing

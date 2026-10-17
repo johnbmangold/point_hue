@@ -71,4 +71,10 @@ class ColorHistoryNotifier extends _$ColorHistoryNotifier {
       newList.map((e) => jsonEncode(e.toJson())).toList(),
     );
   }
+
+  Future<void> clearHistory() async {
+    state = const AsyncData([]);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_key);
+  }
 }
