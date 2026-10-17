@@ -532,9 +532,8 @@ class _HarmonySwatch extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             label ?? hexString,
-            style: Theme.of(
-              context,
-            ).textTheme.labelSmall?.copyWith(fontFamily: 'monospace'),
+            style: Theme.of(context).textTheme.labelSmall
+                ?.copyWith(fontFamily: 'monospace'),
           ),
         ],
       ),

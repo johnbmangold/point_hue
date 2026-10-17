@@ -15,10 +15,9 @@ class FakeCameraNotifier extends CameraNotifier {
 
   FakeCameraNotifier(
     this._controller, {
-    bool isFlashOn = false,
-    int currentCameraIndex = 0,
-  }) : _isFlashOn = isFlashOn,
-       _currentCameraIndex = currentCameraIndex;
+    this._isFlashOn = false,
+    this._currentCameraIndex = 0,
+  });
 
   @override
   Future<CameraState?> build() async {

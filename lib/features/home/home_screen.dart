@@ -359,9 +359,9 @@ class ColorInfoCard extends StatelessWidget {
                               children: [
                                 Flexible(
                                   child: GestureDetector(
-                                    onTap: () => ColorDetailRoute(
-                                      hex: hexRaw,
-                                    ).go(context),
+                                    onTap: () =>
+                                        ColorDetailRoute(hex: hexRaw)
+                                            .go(context),
                                     child: Text(
                                       colorModel.name,
                                       style: theme.textTheme.titleMedium

@@ -70,23 +70,19 @@ class MockCameraController extends _i1.Mock implements _i2.CameraController {
   }
 
   @override
-  _i2.CameraDescription get description =>
-      (super.noSuchMethod(
-            Invocation.getter(#description),
-            returnValue: _FakeCameraDescription_0(
-              this,
-              Invocation.getter(#description),
-            ),
-          )
-          as _i2.CameraDescription);
+  _i2.CameraDescription get description => (super.noSuchMethod(
+    Invocation.getter(#description),
+    returnValue: _FakeCameraDescription_0(
+      this,
+      Invocation.getter(#description),
+    ),
+  ) as _i2.CameraDescription);
 
   @override
-  _i2.ResolutionPreset get resolutionPreset =>
-      (super.noSuchMethod(
-            Invocation.getter(#resolutionPreset),
-            returnValue: _i2.ResolutionPreset.low,
-          )
-          as _i2.ResolutionPreset);
+  _i2.ResolutionPreset get resolutionPreset => (super.noSuchMethod(
+    Invocation.getter(#resolutionPreset),
+    returnValue: _i2.ResolutionPreset.low,
+  ) as _i2.ResolutionPreset);
 
   @override
   bool get enableAudio =>
@@ -94,27 +90,20 @@ class MockCameraController extends _i1.Mock implements _i2.CameraController {
           as bool);
 
   @override
-  _i3.MediaSettings get mediaSettings =>
-      (super.noSuchMethod(
-            Invocation.getter(#mediaSettings),
-            returnValue: _FakeMediaSettings_1(
-              this,
-              Invocation.getter(#mediaSettings),
-            ),
-          )
-          as _i3.MediaSettings);
+  _i3.MediaSettings get mediaSettings => (super.noSuchMethod(
+    Invocation.getter(#mediaSettings),
+    returnValue: _FakeMediaSettings_1(this, Invocation.getter(#mediaSettings)),
+  ) as _i3.MediaSettings);
 
   @override
   int get cameraId =>
       (super.noSuchMethod(Invocation.getter(#cameraId), returnValue: 0) as int);
 
   @override
-  _i2.CameraValue get value =>
-      (super.noSuchMethod(
-            Invocation.getter(#value),
-            returnValue: _FakeCameraValue_2(this, Invocation.getter(#value)),
-          )
-          as _i2.CameraValue);
+  _i2.CameraValue get value => (super.noSuchMethod(
+    Invocation.getter(#value),
+    returnValue: _FakeCameraValue_2(this, Invocation.getter(#value)),
+  ) as _i2.CameraValue);
 
   @override
   set value(_i2.CameraValue? newValue) => super.noSuchMethod(
@@ -134,306 +123,242 @@ class MockCameraController extends _i1.Mock implements _i2.CameraController {
   );
 
   @override
-  _i6.Future<void> initialize() =>
-      (super.noSuchMethod(
-            Invocation.method(#initialize, []),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
-          )
-          as _i6.Future<void>);
+  _i6.Future<void> initialize() => (super.noSuchMethod(
+    Invocation.method(#initialize, []),
+    returnValue: _i6.Future<void>.value(),
+    returnValueForMissingStub: _i6.Future<void>.value(),
+  ) as _i6.Future<void>);
 
   @override
-  _i6.Future<void> prepareForVideoRecording() =>
-      (super.noSuchMethod(
-            Invocation.method(#prepareForVideoRecording, []),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
-          )
-          as _i6.Future<void>);
+  _i6.Future<void> prepareForVideoRecording() => (super.noSuchMethod(
+    Invocation.method(#prepareForVideoRecording, []),
+    returnValue: _i6.Future<void>.value(),
+    returnValueForMissingStub: _i6.Future<void>.value(),
+  ) as _i6.Future<void>);
 
   @override
-  _i6.Future<void> pausePreview() =>
-      (super.noSuchMethod(
-            Invocation.method(#pausePreview, []),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
-          )
-          as _i6.Future<void>);
+  _i6.Future<void> pausePreview() => (super.noSuchMethod(
+    Invocation.method(#pausePreview, []),
+    returnValue: _i6.Future<void>.value(),
+    returnValueForMissingStub: _i6.Future<void>.value(),
+  ) as _i6.Future<void>);
 
   @override
-  _i6.Future<void> resumePreview() =>
-      (super.noSuchMethod(
-            Invocation.method(#resumePreview, []),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
-          )
-          as _i6.Future<void>);
+  _i6.Future<void> resumePreview() => (super.noSuchMethod(
+    Invocation.method(#resumePreview, []),
+    returnValue: _i6.Future<void>.value(),
+    returnValueForMissingStub: _i6.Future<void>.value(),
+  ) as _i6.Future<void>);
 
   @override
   _i6.Future<void> setDescription(_i2.CameraDescription? description) =>
       (super.noSuchMethod(
-            Invocation.method(#setDescription, [description]),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
-          )
-          as _i6.Future<void>);
+        Invocation.method(#setDescription, [description]),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
 
   @override
-  _i6.Future<_i2.XFile> takePicture() =>
-      (super.noSuchMethod(
-            Invocation.method(#takePicture, []),
-            returnValue: _i6.Future<_i2.XFile>.value(
-              _FakeXFile_3(this, Invocation.method(#takePicture, [])),
-            ),
-          )
-          as _i6.Future<_i2.XFile>);
+  _i6.Future<_i2.XFile> takePicture() => (super.noSuchMethod(
+    Invocation.method(#takePicture, []),
+    returnValue: _i6.Future<_i2.XFile>.value(
+      _FakeXFile_3(this, Invocation.method(#takePicture, [])),
+    ),
+  ) as _i6.Future<_i2.XFile>);
 
   @override
   _i6.Future<void> startImageStream(_i2.onLatestImageAvailable? onAvailable) =>
       (super.noSuchMethod(
-            Invocation.method(#startImageStream, [onAvailable]),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
-          )
-          as _i6.Future<void>);
+        Invocation.method(#startImageStream, [onAvailable]),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
 
   @override
-  _i6.Future<void> stopImageStream() =>
-      (super.noSuchMethod(
-            Invocation.method(#stopImageStream, []),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
-          )
-          as _i6.Future<void>);
+  _i6.Future<void> stopImageStream() => (super.noSuchMethod(
+    Invocation.method(#stopImageStream, []),
+    returnValue: _i6.Future<void>.value(),
+    returnValueForMissingStub: _i6.Future<void>.value(),
+  ) as _i6.Future<void>);
 
   @override
   _i6.Future<void> startVideoRecording({
     _i2.onLatestImageAvailable? onAvailable,
     bool? enablePersistentRecording = true,
-  }) =>
-      (super.noSuchMethod(
-            Invocation.method(#startVideoRecording, [], {
-              #onAvailable: onAvailable,
-              #enablePersistentRecording: enablePersistentRecording,
-            }),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
-          )
-          as _i6.Future<void>);
+  }) => (super.noSuchMethod(
+    Invocation.method(#startVideoRecording, [], {
+      #onAvailable: onAvailable,
+      #enablePersistentRecording: enablePersistentRecording,
+    }),
+    returnValue: _i6.Future<void>.value(),
+    returnValueForMissingStub: _i6.Future<void>.value(),
+  ) as _i6.Future<void>);
 
   @override
-  _i6.Future<_i2.XFile> stopVideoRecording() =>
-      (super.noSuchMethod(
-            Invocation.method(#stopVideoRecording, []),
-            returnValue: _i6.Future<_i2.XFile>.value(
-              _FakeXFile_3(this, Invocation.method(#stopVideoRecording, [])),
-            ),
-          )
-          as _i6.Future<_i2.XFile>);
+  _i6.Future<_i2.XFile> stopVideoRecording() => (super.noSuchMethod(
+    Invocation.method(#stopVideoRecording, []),
+    returnValue: _i6.Future<_i2.XFile>.value(
+      _FakeXFile_3(this, Invocation.method(#stopVideoRecording, [])),
+    ),
+  ) as _i6.Future<_i2.XFile>);
 
   @override
-  _i6.Future<void> pauseVideoRecording() =>
-      (super.noSuchMethod(
-            Invocation.method(#pauseVideoRecording, []),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
-          )
-          as _i6.Future<void>);
+  _i6.Future<void> pauseVideoRecording() => (super.noSuchMethod(
+    Invocation.method(#pauseVideoRecording, []),
+    returnValue: _i6.Future<void>.value(),
+    returnValueForMissingStub: _i6.Future<void>.value(),
+  ) as _i6.Future<void>);
 
   @override
-  _i6.Future<void> resumeVideoRecording() =>
-      (super.noSuchMethod(
-            Invocation.method(#resumeVideoRecording, []),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
-          )
-          as _i6.Future<void>);
+  _i6.Future<void> resumeVideoRecording() => (super.noSuchMethod(
+    Invocation.method(#resumeVideoRecording, []),
+    returnValue: _i6.Future<void>.value(),
+    returnValueForMissingStub: _i6.Future<void>.value(),
+  ) as _i6.Future<void>);
 
   @override
-  _i4.Widget buildPreview() =>
-      (super.noSuchMethod(
-            Invocation.method(#buildPreview, []),
-            returnValue: _FakeWidget_4(
-              this,
-              Invocation.method(#buildPreview, []),
-            ),
-          )
-          as _i4.Widget);
+  _i4.Widget buildPreview() => (super.noSuchMethod(
+    Invocation.method(#buildPreview, []),
+    returnValue: _FakeWidget_4(this, Invocation.method(#buildPreview, [])),
+  ) as _i4.Widget);
 
   @override
-  _i6.Future<double> getMaxZoomLevel() =>
-      (super.noSuchMethod(
-            Invocation.method(#getMaxZoomLevel, []),
-            returnValue: _i6.Future<double>.value(0.0),
-          )
-          as _i6.Future<double>);
+  _i6.Future<double> getMaxZoomLevel() => (super.noSuchMethod(
+    Invocation.method(#getMaxZoomLevel, []),
+    returnValue: _i6.Future<double>.value(0.0),
+  ) as _i6.Future<double>);
 
   @override
-  _i6.Future<double> getMinZoomLevel() =>
-      (super.noSuchMethod(
-            Invocation.method(#getMinZoomLevel, []),
-            returnValue: _i6.Future<double>.value(0.0),
-          )
-          as _i6.Future<double>);
+  _i6.Future<double> getMinZoomLevel() => (super.noSuchMethod(
+    Invocation.method(#getMinZoomLevel, []),
+    returnValue: _i6.Future<double>.value(0.0),
+  ) as _i6.Future<double>);
 
   @override
-  _i6.Future<void> setZoomLevel(double? zoom) =>
-      (super.noSuchMethod(
-            Invocation.method(#setZoomLevel, [zoom]),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
-          )
-          as _i6.Future<void>);
+  _i6.Future<void> setZoomLevel(double? zoom) => (super.noSuchMethod(
+    Invocation.method(#setZoomLevel, [zoom]),
+    returnValue: _i6.Future<void>.value(),
+    returnValueForMissingStub: _i6.Future<void>.value(),
+  ) as _i6.Future<void>);
 
   @override
   _i6.Future<void> setVideoStabilizationMode(
     _i2.VideoStabilizationMode? mode, {
     bool? allowFallback = true,
-  }) =>
-      (super.noSuchMethod(
-            Invocation.method(
-              #setVideoStabilizationMode,
-              [mode],
-              {#allowFallback: allowFallback},
-            ),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
-          )
-          as _i6.Future<void>);
+  }) => (super.noSuchMethod(
+    Invocation.method(
+      #setVideoStabilizationMode,
+      [mode],
+      {#allowFallback: allowFallback},
+    ),
+    returnValue: _i6.Future<void>.value(),
+    returnValueForMissingStub: _i6.Future<void>.value(),
+  ) as _i6.Future<void>);
 
   @override
   _i6.Future<Iterable<_i2.VideoStabilizationMode>>
-  getSupportedVideoStabilizationModes() =>
-      (super.noSuchMethod(
-            Invocation.method(#getSupportedVideoStabilizationModes, []),
-            returnValue: _i6.Future<Iterable<_i2.VideoStabilizationMode>>.value(
-              <_i2.VideoStabilizationMode>[],
-            ),
-          )
-          as _i6.Future<Iterable<_i2.VideoStabilizationMode>>);
+  getSupportedVideoStabilizationModes() => (super.noSuchMethod(
+    Invocation.method(#getSupportedVideoStabilizationModes, []),
+    returnValue: _i6.Future<Iterable<_i2.VideoStabilizationMode>>.value(
+      <_i2.VideoStabilizationMode>[],
+    ),
+  ) as _i6.Future<Iterable<_i2.VideoStabilizationMode>>);
 
   @override
-  _i6.Future<void> setFlashMode(_i2.FlashMode? mode) =>
-      (super.noSuchMethod(
-            Invocation.method(#setFlashMode, [mode]),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
-          )
-          as _i6.Future<void>);
+  _i6.Future<void> setFlashMode(_i2.FlashMode? mode) => (super.noSuchMethod(
+    Invocation.method(#setFlashMode, [mode]),
+    returnValue: _i6.Future<void>.value(),
+    returnValueForMissingStub: _i6.Future<void>.value(),
+  ) as _i6.Future<void>);
 
   @override
   _i6.Future<void> setExposureMode(_i2.ExposureMode? mode) =>
       (super.noSuchMethod(
-            Invocation.method(#setExposureMode, [mode]),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
-          )
-          as _i6.Future<void>);
+        Invocation.method(#setExposureMode, [mode]),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
 
   @override
-  _i6.Future<void> setExposurePoint(_i7.Offset? point) =>
-      (super.noSuchMethod(
-            Invocation.method(#setExposurePoint, [point]),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
-          )
-          as _i6.Future<void>);
+  _i6.Future<void> setExposurePoint(_i7.Offset? point) => (super.noSuchMethod(
+    Invocation.method(#setExposurePoint, [point]),
+    returnValue: _i6.Future<void>.value(),
+    returnValueForMissingStub: _i6.Future<void>.value(),
+  ) as _i6.Future<void>);
 
   @override
-  _i6.Future<double> getMinExposureOffset() =>
-      (super.noSuchMethod(
-            Invocation.method(#getMinExposureOffset, []),
-            returnValue: _i6.Future<double>.value(0.0),
-          )
-          as _i6.Future<double>);
+  _i6.Future<double> getMinExposureOffset() => (super.noSuchMethod(
+    Invocation.method(#getMinExposureOffset, []),
+    returnValue: _i6.Future<double>.value(0.0),
+  ) as _i6.Future<double>);
 
   @override
-  _i6.Future<double> getMaxExposureOffset() =>
-      (super.noSuchMethod(
-            Invocation.method(#getMaxExposureOffset, []),
-            returnValue: _i6.Future<double>.value(0.0),
-          )
-          as _i6.Future<double>);
+  _i6.Future<double> getMaxExposureOffset() => (super.noSuchMethod(
+    Invocation.method(#getMaxExposureOffset, []),
+    returnValue: _i6.Future<double>.value(0.0),
+  ) as _i6.Future<double>);
 
   @override
-  _i6.Future<double> getExposureOffsetStepSize() =>
-      (super.noSuchMethod(
-            Invocation.method(#getExposureOffsetStepSize, []),
-            returnValue: _i6.Future<double>.value(0.0),
-          )
-          as _i6.Future<double>);
+  _i6.Future<double> getExposureOffsetStepSize() => (super.noSuchMethod(
+    Invocation.method(#getExposureOffsetStepSize, []),
+    returnValue: _i6.Future<double>.value(0.0),
+  ) as _i6.Future<double>);
 
   @override
-  _i6.Future<double> setExposureOffset(double? offset) =>
-      (super.noSuchMethod(
-            Invocation.method(#setExposureOffset, [offset]),
-            returnValue: _i6.Future<double>.value(0.0),
-          )
-          as _i6.Future<double>);
+  _i6.Future<double> setExposureOffset(double? offset) => (super.noSuchMethod(
+    Invocation.method(#setExposureOffset, [offset]),
+    returnValue: _i6.Future<double>.value(0.0),
+  ) as _i6.Future<double>);
 
   @override
   _i6.Future<void> lockCaptureOrientation([
     _i8.DeviceOrientation? orientation,
-  ]) =>
-      (super.noSuchMethod(
-            Invocation.method(#lockCaptureOrientation, [orientation]),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
-          )
-          as _i6.Future<void>);
+  ]) => (super.noSuchMethod(
+    Invocation.method(#lockCaptureOrientation, [orientation]),
+    returnValue: _i6.Future<void>.value(),
+    returnValueForMissingStub: _i6.Future<void>.value(),
+  ) as _i6.Future<void>);
 
   @override
-  _i6.Future<void> setFocusMode(_i2.FocusMode? mode) =>
-      (super.noSuchMethod(
-            Invocation.method(#setFocusMode, [mode]),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
-          )
-          as _i6.Future<void>);
+  _i6.Future<void> setFocusMode(_i2.FocusMode? mode) => (super.noSuchMethod(
+    Invocation.method(#setFocusMode, [mode]),
+    returnValue: _i6.Future<void>.value(),
+    returnValueForMissingStub: _i6.Future<void>.value(),
+  ) as _i6.Future<void>);
 
   @override
-  _i6.Future<void> unlockCaptureOrientation() =>
-      (super.noSuchMethod(
-            Invocation.method(#unlockCaptureOrientation, []),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
-          )
-          as _i6.Future<void>);
+  _i6.Future<void> unlockCaptureOrientation() => (super.noSuchMethod(
+    Invocation.method(#unlockCaptureOrientation, []),
+    returnValue: _i6.Future<void>.value(),
+    returnValueForMissingStub: _i6.Future<void>.value(),
+  ) as _i6.Future<void>);
 
   @override
-  _i6.Future<void> setFocusPoint(_i7.Offset? point) =>
-      (super.noSuchMethod(
-            Invocation.method(#setFocusPoint, [point]),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
-          )
-          as _i6.Future<void>);
+  _i6.Future<void> setFocusPoint(_i7.Offset? point) => (super.noSuchMethod(
+    Invocation.method(#setFocusPoint, [point]),
+    returnValue: _i6.Future<void>.value(),
+    returnValueForMissingStub: _i6.Future<void>.value(),
+  ) as _i6.Future<void>);
 
   @override
-  _i6.Future<void> setJpegImageQuality(int? quality) =>
-      (super.noSuchMethod(
-            Invocation.method(#setJpegImageQuality, [quality]),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
-          )
-          as _i6.Future<void>);
+  _i6.Future<void> setJpegImageQuality(int? quality) => (super.noSuchMethod(
+    Invocation.method(#setJpegImageQuality, [quality]),
+    returnValue: _i6.Future<void>.value(),
+    returnValueForMissingStub: _i6.Future<void>.value(),
+  ) as _i6.Future<void>);
 
   @override
-  bool supportsImageStreaming() =>
-      (super.noSuchMethod(
-            Invocation.method(#supportsImageStreaming, []),
-            returnValue: false,
-          )
-          as bool);
+  bool supportsImageStreaming() => (super.noSuchMethod(
+    Invocation.method(#supportsImageStreaming, []),
+    returnValue: false,
+  ) as bool);
 
   @override
-  _i6.Future<void> dispose() =>
-      (super.noSuchMethod(
-            Invocation.method(#dispose, []),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
-          )
-          as _i6.Future<void>);
+  _i6.Future<void> dispose() => (super.noSuchMethod(
+    Invocation.method(#dispose, []),
+    returnValue: _i6.Future<void>.value(),
+    returnValueForMissingStub: _i6.Future<void>.value(),
+  ) as _i6.Future<void>);
 
   @override
   void removeListener(_i7.VoidCallback? listener) => super.noSuchMethod(
@@ -468,44 +393,34 @@ class MockCameraValue extends _i1.Mock implements _i2.CameraValue {
           as bool);
 
   @override
-  bool get isTakingPicture =>
-      (super.noSuchMethod(
-            Invocation.getter(#isTakingPicture),
-            returnValue: false,
-          )
-          as bool);
+  bool get isTakingPicture => (super.noSuchMethod(
+    Invocation.getter(#isTakingPicture),
+    returnValue: false,
+  ) as bool);
 
   @override
-  bool get isRecordingVideo =>
-      (super.noSuchMethod(
-            Invocation.getter(#isRecordingVideo),
-            returnValue: false,
-          )
-          as bool);
+  bool get isRecordingVideo => (super.noSuchMethod(
+    Invocation.getter(#isRecordingVideo),
+    returnValue: false,
+  ) as bool);
 
   @override
-  bool get isStreamingImages =>
-      (super.noSuchMethod(
-            Invocation.getter(#isStreamingImages),
-            returnValue: false,
-          )
-          as bool);
+  bool get isStreamingImages => (super.noSuchMethod(
+    Invocation.getter(#isStreamingImages),
+    returnValue: false,
+  ) as bool);
 
   @override
-  bool get isPreviewPaused =>
-      (super.noSuchMethod(
-            Invocation.getter(#isPreviewPaused),
-            returnValue: false,
-          )
-          as bool);
+  bool get isPreviewPaused => (super.noSuchMethod(
+    Invocation.getter(#isPreviewPaused),
+    returnValue: false,
+  ) as bool);
 
   @override
-  bool get isRecordingPaused =>
-      (super.noSuchMethod(
-            Invocation.getter(#isRecordingPaused),
-            returnValue: false,
-          )
-          as bool);
+  bool get isRecordingPaused => (super.noSuchMethod(
+    Invocation.getter(#isRecordingPaused),
+    returnValue: false,
+  ) as bool);
 
   @override
   double get aspectRatio =>
@@ -518,79 +433,61 @@ class MockCameraValue extends _i1.Mock implements _i2.CameraValue {
           as bool);
 
   @override
-  _i2.FlashMode get flashMode =>
-      (super.noSuchMethod(
-            Invocation.getter(#flashMode),
-            returnValue: _i2.FlashMode.off,
-          )
-          as _i2.FlashMode);
+  _i2.FlashMode get flashMode => (super.noSuchMethod(
+    Invocation.getter(#flashMode),
+    returnValue: _i2.FlashMode.off,
+  ) as _i2.FlashMode);
 
   @override
-  _i2.ExposureMode get exposureMode =>
-      (super.noSuchMethod(
-            Invocation.getter(#exposureMode),
-            returnValue: _i2.ExposureMode.auto,
-          )
-          as _i2.ExposureMode);
+  _i2.ExposureMode get exposureMode => (super.noSuchMethod(
+    Invocation.getter(#exposureMode),
+    returnValue: _i2.ExposureMode.auto,
+  ) as _i2.ExposureMode);
 
   @override
-  _i2.FocusMode get focusMode =>
-      (super.noSuchMethod(
-            Invocation.getter(#focusMode),
-            returnValue: _i2.FocusMode.auto,
-          )
-          as _i2.FocusMode);
+  _i2.FocusMode get focusMode => (super.noSuchMethod(
+    Invocation.getter(#focusMode),
+    returnValue: _i2.FocusMode.auto,
+  ) as _i2.FocusMode);
 
   @override
-  bool get exposurePointSupported =>
-      (super.noSuchMethod(
-            Invocation.getter(#exposurePointSupported),
-            returnValue: false,
-          )
-          as bool);
+  bool get exposurePointSupported => (super.noSuchMethod(
+    Invocation.getter(#exposurePointSupported),
+    returnValue: false,
+  ) as bool);
 
   @override
-  bool get focusPointSupported =>
-      (super.noSuchMethod(
-            Invocation.getter(#focusPointSupported),
-            returnValue: false,
-          )
-          as bool);
+  bool get focusPointSupported => (super.noSuchMethod(
+    Invocation.getter(#focusPointSupported),
+    returnValue: false,
+  ) as bool);
 
   @override
-  _i8.DeviceOrientation get deviceOrientation =>
-      (super.noSuchMethod(
-            Invocation.getter(#deviceOrientation),
-            returnValue: _i8.DeviceOrientation.portraitUp,
-          )
-          as _i8.DeviceOrientation);
+  _i8.DeviceOrientation get deviceOrientation => (super.noSuchMethod(
+    Invocation.getter(#deviceOrientation),
+    returnValue: _i8.DeviceOrientation.portraitUp,
+  ) as _i8.DeviceOrientation);
 
   @override
-  bool get isCaptureOrientationLocked =>
-      (super.noSuchMethod(
-            Invocation.getter(#isCaptureOrientationLocked),
-            returnValue: false,
-          )
-          as bool);
+  bool get isCaptureOrientationLocked => (super.noSuchMethod(
+    Invocation.getter(#isCaptureOrientationLocked),
+    returnValue: false,
+  ) as bool);
 
   @override
-  _i2.CameraDescription get description =>
-      (super.noSuchMethod(
-            Invocation.getter(#description),
-            returnValue: _FakeCameraDescription_0(
-              this,
-              Invocation.getter(#description),
-            ),
-          )
-          as _i2.CameraDescription);
+  _i2.CameraDescription get description => (super.noSuchMethod(
+    Invocation.getter(#description),
+    returnValue: _FakeCameraDescription_0(
+      this,
+      Invocation.getter(#description),
+    ),
+  ) as _i2.CameraDescription);
 
   @override
-  _i2.VideoStabilizationMode get videoStabilizationMode =>
-      (super.noSuchMethod(
-            Invocation.getter(#videoStabilizationMode),
-            returnValue: _i2.VideoStabilizationMode.off,
-          )
-          as _i2.VideoStabilizationMode);
+  _i2.VideoStabilizationMode get videoStabilizationMode => (super.noSuchMethod(
+    Invocation.getter(#videoStabilizationMode),
+    returnValue: _i2.VideoStabilizationMode.off,
+  ) as _i2.VideoStabilizationMode);
 
   @override
   _i2.CameraValue copyWith({
@@ -613,53 +510,51 @@ class MockCameraValue extends _i1.Mock implements _i2.CameraValue {
     _i2.CameraDescription? description,
     _i2.Optional<_i8.DeviceOrientation>? previewPauseOrientation,
     _i2.VideoStabilizationMode? videoStabilizationMode,
-  }) =>
-      (super.noSuchMethod(
-            Invocation.method(#copyWith, [], {
-              #isInitialized: isInitialized,
-              #isRecordingVideo: isRecordingVideo,
-              #isTakingPicture: isTakingPicture,
-              #isStreamingImages: isStreamingImages,
-              #errorDescription: errorDescription,
-              #previewSize: previewSize,
-              #isRecordingPaused: isRecordingPaused,
-              #flashMode: flashMode,
-              #exposureMode: exposureMode,
-              #focusMode: focusMode,
-              #exposurePointSupported: exposurePointSupported,
-              #focusPointSupported: focusPointSupported,
-              #deviceOrientation: deviceOrientation,
-              #lockedCaptureOrientation: lockedCaptureOrientation,
-              #recordingOrientation: recordingOrientation,
-              #isPreviewPaused: isPreviewPaused,
-              #description: description,
-              #previewPauseOrientation: previewPauseOrientation,
-              #videoStabilizationMode: videoStabilizationMode,
-            }),
-            returnValue: _FakeCameraValue_2(
-              this,
-              Invocation.method(#copyWith, [], {
-                #isInitialized: isInitialized,
-                #isRecordingVideo: isRecordingVideo,
-                #isTakingPicture: isTakingPicture,
-                #isStreamingImages: isStreamingImages,
-                #errorDescription: errorDescription,
-                #previewSize: previewSize,
-                #isRecordingPaused: isRecordingPaused,
-                #flashMode: flashMode,
-                #exposureMode: exposureMode,
-                #focusMode: focusMode,
-                #exposurePointSupported: exposurePointSupported,
-                #focusPointSupported: focusPointSupported,
-                #deviceOrientation: deviceOrientation,
-                #lockedCaptureOrientation: lockedCaptureOrientation,
-                #recordingOrientation: recordingOrientation,
-                #isPreviewPaused: isPreviewPaused,
-                #description: description,
-                #previewPauseOrientation: previewPauseOrientation,
-                #videoStabilizationMode: videoStabilizationMode,
-              }),
-            ),
-          )
-          as _i2.CameraValue);
+  }) => (super.noSuchMethod(
+    Invocation.method(#copyWith, [], {
+      #isInitialized: isInitialized,
+      #isRecordingVideo: isRecordingVideo,
+      #isTakingPicture: isTakingPicture,
+      #isStreamingImages: isStreamingImages,
+      #errorDescription: errorDescription,
+      #previewSize: previewSize,
+      #isRecordingPaused: isRecordingPaused,
+      #flashMode: flashMode,
+      #exposureMode: exposureMode,
+      #focusMode: focusMode,
+      #exposurePointSupported: exposurePointSupported,
+      #focusPointSupported: focusPointSupported,
+      #deviceOrientation: deviceOrientation,
+      #lockedCaptureOrientation: lockedCaptureOrientation,
+      #recordingOrientation: recordingOrientation,
+      #isPreviewPaused: isPreviewPaused,
+      #description: description,
+      #previewPauseOrientation: previewPauseOrientation,
+      #videoStabilizationMode: videoStabilizationMode,
+    }),
+    returnValue: _FakeCameraValue_2(
+      this,
+      Invocation.method(#copyWith, [], {
+        #isInitialized: isInitialized,
+        #isRecordingVideo: isRecordingVideo,
+        #isTakingPicture: isTakingPicture,
+        #isStreamingImages: isStreamingImages,
+        #errorDescription: errorDescription,
+        #previewSize: previewSize,
+        #isRecordingPaused: isRecordingPaused,
+        #flashMode: flashMode,
+        #exposureMode: exposureMode,
+        #focusMode: focusMode,
+        #exposurePointSupported: exposurePointSupported,
+        #focusPointSupported: focusPointSupported,
+        #deviceOrientation: deviceOrientation,
+        #lockedCaptureOrientation: lockedCaptureOrientation,
+        #recordingOrientation: recordingOrientation,
+        #isPreviewPaused: isPreviewPaused,
+        #description: description,
+        #previewPauseOrientation: previewPauseOrientation,
+        #videoStabilizationMode: videoStabilizationMode,
+      }),
+    ),
+  ) as _i2.CameraValue);
 }
